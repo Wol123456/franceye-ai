@@ -371,7 +371,12 @@ export default function Dashboard() {
                                 FrancEye AI
                             </h1>
                             <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg font-light">
-                                Yapay Zeka Destekli Şube Sağlık ve İt                    {/* Sağ Üst Menü (Tema, Ana Sayfa, Ayarlar & Bildirimler) */}
+                                Yapay Zeka Destekli Şube Sağlık ve İtibar Takibi
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Sağ Üst Menü (Tema, Ana Sayfa, Ayarlar & Bildirimler) */}
                     <div className="mt-4 md:mt-0 flex flex-wrap items-center justify-end gap-3 z-30 relative">
                         <button onClick={() => setIsDarkMode(!isDarkMode)} className="flex items-center gap-2 bg-slate-200/80 dark:bg-slate-800/50 hover:bg-slate-300 dark:hover:bg-slate-700 px-4 py-2 rounded-xl text-lg transition border border-slate-300 dark:border-white/10 shadow-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
                             {isDarkMode ? '☀️' : '🌙'}
