@@ -349,7 +349,8 @@ export default function Dashboard() {
     }, [branches, selectedCity, view]);
 
     return (
-        <div className={`${isDarkMode ? 'dark' : ''} min-h-screen bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-x-hidden`}>
+        <div className={isDarkMode ? 'dark' : ''}>
+            <div className="min-h-screen bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[100px]" />
@@ -1231,6 +1232,7 @@ export default function Dashboard() {
                     </div>
                 </div>
             )}
+        </div>
         </div>
     );
 }
