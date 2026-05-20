@@ -19,6 +19,9 @@ const getMockUnread = (branch: any) => {
 };
 
 export default function Dashboard() {
+    // Theme State
+    const [isDarkMode, setIsDarkMode] = useState(true);
+
     // Search State
     const [branchName, setBranchName] = useState('');
     const [selectedCity, setSelectedCity] = useState('');
@@ -346,7 +349,7 @@ export default function Dashboard() {
     }, [branches, selectedCity, view]);
 
     return (
-        <div className="min-h-screen bg-[#020617] text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
+        <div className={`${isDarkMode ? 'dark' : ''} min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-x-hidden`}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[100px]" />
@@ -356,7 +359,7 @@ export default function Dashboard() {
             <div className="relative max-w-7xl mx-auto p-6 md:p-10 space-y-10">
 
                 {/* Header */}
-                <header className="flex flex-col md:flex-row justify-between items-end border-b border-white/10 pb-8">
+                <header className="flex flex-col md:flex-row justify-between items-end border-b border-slate-300 dark:border-white/10 pb-8">
                     <div className="cursor-pointer flex items-center gap-4" onClick={() => setView('search')}>
                         <img 
                             src="/logo.png" 
@@ -367,19 +370,22 @@ export default function Dashboard() {
                             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent tracking-tight">
                                 FrancEye AI
                             </h1>
-                            <p className="text-slate-400 mt-2 text-lg font-light">
+                            <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg font-light">
                                 Yapay Zeka Destekli Şube Sağlık ve İtibar Takibi
                             </p>
                         </div>
                     </div>
 
-                    {/* Sağ Üst Menü (Ana Sayfa, Ayarlar & Bildirimler) */}
+                    {/* Sağ Üst Menü (Tema, Ana Sayfa, Ayarlar & Bildirimler) */}
                     <div className="mt-4 md:mt-0 flex flex-wrap items-center justify-end gap-3 z-30 relative">
-                        <button onClick={() => setView('search')} className="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition border border-white/10 shadow-lg text-slate-300 hover:text-white">
+                        <button onClick={() => setIsDarkMode(!isDarkMode)} className="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition border border-slate-300 dark:border-white/10 shadow-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                            {isDarkMode ? '☀️ Gündüz' : '🌙 Gece'}
+                        </button>
+                        <button onClick={() => setView('search')} className="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition border border-slate-300 dark:border-white/10 shadow-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                             Ana Sayfa
                         </button>
-                        <button onClick={openSettings} className="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition border border-white/10 shadow-lg text-slate-300 hover:text-white">
+                        <button onClick={openSettings} className="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 hover:bg-slate-200 dark:bg-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition border border-slate-300 dark:border-white/10 shadow-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                             Ayarlar & Rehber
                         </button>
@@ -387,22 +393,22 @@ export default function Dashboard() {
                         <div className="relative">
                             <button 
                                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} 
-                                className="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition border border-white/10 shadow-lg text-slate-300 hover:text-white"
+                                className="flex items-center gap-2 bg-white/80 dark:bg-slate-800/80 hover:bg-slate-200 dark:bg-slate-700 px-4 py-2 rounded-xl text-sm font-semibold transition border border-slate-300 dark:border-white/10 shadow-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-white"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                                 Bildirimler
                                 {liveNotifications.length > 0 && (
-                                    <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1">
+                                    <span className="bg-red-500 text-slate-900 dark:text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-1">
                                         {liveNotifications.length}
                                     </span>
                                 )}
                             </button>
 
                             {isNotificationsOpen && liveNotifications.length > 0 && (
-                                <div className="absolute right-0 top-full mt-3 w-72 md:w-80 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[400px] animate-in fade-in slide-in-from-top-2 duration-200">
-                                    <div className="bg-slate-800 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
-                                        <h4 className="font-bold text-sm text-white">Yeni Yorumlar</h4>
-                                        <span className="text-xs text-slate-400">{liveNotifications.length} Şube</span>
+                                <div className="absolute right-0 top-full mt-3 w-72 md:w-80 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50 flex flex-col max-h-[400px] animate-in fade-in slide-in-from-top-2 duration-200">
+                                    <div className="bg-white dark:bg-slate-800 px-4 py-3 border-b border-slate-300 dark:border-slate-700 flex justify-between items-center">
+                                        <h4 className="font-bold text-sm text-slate-900 dark:text-white">Yeni Yorumlar</h4>
+                                        <span className="text-xs text-slate-600 dark:text-slate-400">{liveNotifications.length} Şube</span>
                                     </div>
                                     <div className="overflow-y-auto custom-scrollbar p-2 space-y-2">
                                         {liveNotifications.map(branch => {
@@ -410,14 +416,14 @@ export default function Dashboard() {
                                             return (
                                                 <div 
                                                     key={branch.place_id} 
-                                                    className="bg-slate-800/50 hover:bg-slate-800 border border-transparent hover:border-slate-700 p-3 rounded-xl cursor-pointer transition flex flex-col gap-1.5"
+                                                    className="bg-white/80 dark:bg-slate-800/50 hover:bg-white dark:bg-slate-800 border border-transparent hover:border-slate-300 dark:border-slate-700 p-3 rounded-xl cursor-pointer transition flex flex-col gap-1.5"
                                                     onClick={() => {
                                                         analyzeBranch(branch);
                                                         setIsNotificationsOpen(false);
                                                     }}
                                                 >
                                                     <div className="flex justify-between items-start">
-                                                        <span className="font-bold text-sm text-white leading-tight pr-2">{branch.name}</span>
+                                                        <span className="font-bold text-sm text-slate-900 dark:text-white leading-tight pr-2">{branch.name}</span>
                                                         <span className="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap">Az önce</span>
                                                     </div>
                                                     <div className="flex flex-wrap gap-2">
@@ -432,7 +438,7 @@ export default function Dashboard() {
                             )}
                             
                             {isNotificationsOpen && liveNotifications.length === 0 && (
-                                <div className="absolute right-0 top-full mt-3 w-64 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-6 text-center z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="absolute right-0 top-full mt-3 w-64 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl shadow-2xl p-6 text-center z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                                     <div className="text-slate-500 text-sm">Yeni bildirim yok.</div>
                                 </div>
                             )}
@@ -441,27 +447,27 @@ export default function Dashboard() {
                 </header>
 
                 {/* --- SEARCH BAR (Always Visible) --- */}
-                <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl p-1 border border-white/10 shadow-2xl z-20 relative">
+                <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl p-1 border border-slate-300 dark:border-white/10 shadow-2xl z-20 relative">
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
                         {/* Brand Input */}
                         <div className="md:col-span-5 p-2">
-                            <label className="text-xs text-slate-400 ml-1 mb-1 block font-semibold uppercase tracking-wider">Marka Adı</label>
+                            <label className="text-xs text-slate-600 dark:text-slate-400 ml-1 mb-1 block font-semibold uppercase tracking-wider">Marka Adı</label>
                             <input
                                 type="text"
                                 value={branchName}
                                 onChange={(e) => setBranchName(e.target.value)}
                                 placeholder="Örn: Kahve Dünyası"
-                                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition text-white"
+                                className="w-full bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition text-slate-900 dark:text-white"
                             />
                         </div>
 
                         {/* City Dropdown */}
                         <div className="md:col-span-4 p-2">
-                            <label className="text-xs text-slate-400 ml-1 mb-1 block font-semibold uppercase tracking-wider">Şehir Seçimi</label>
+                            <label className="text-xs text-slate-600 dark:text-slate-400 ml-1 mb-1 block font-semibold uppercase tracking-wider">Şehir Seçimi</label>
                             <select
                                 value={selectedCity}
                                 onChange={(e) => setSelectedCity(e.target.value)}
-                                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-white appearance-none cursor-pointer"
+                                className="w-full bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-slate-900 dark:text-white appearance-none cursor-pointer"
                             >
                                 <option value="" disabled hidden>İl Seçiniz</option>
                                 {TURKISH_CITIES.map(city => (
@@ -475,7 +481,7 @@ export default function Dashboard() {
                             <button
                                 onClick={searchBranches}
                                 disabled={loading}
-                                className="w-full h-[50px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-50 text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                                className="w-full h-[50px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-50 text-slate-900 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                             >
                                 {loading && view === 'search' ? (
                                     <span className="animate-pulse">Aranıyor...</span>
@@ -491,29 +497,29 @@ export default function Dashboard() {
                 {view === 'search' && branches.length === 0 && (
                     <div className="mt-16 text-center space-y-12 animate-fade-in pb-20">
                         <div className="space-y-4">
-                            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
+                            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white drop-shadow-sm">
                                 İtibarınızı <span className="text-emerald-400">Yapay Zeka</span> ile Yönetin
                             </h2>
-                            <p className="text-slate-400 text-lg max-w-2xl mx-auto font-light leading-relaxed">
+                            <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto font-light leading-relaxed">
                                 Şubelerinizin dijital performansını saniyeler içinde analiz edin, müşteri şikayetlerini kategorize edin ve potansiyel krizleri yapay zeka destekli erken uyarı sistemiyle önleyin.
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                            <div className="bg-slate-800/40 backdrop-blur-md border border-white/5 p-8 rounded-3xl hover:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
+                            <div className="bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-slate-200 dark:border-white/5 p-8 rounded-3xl hover:bg-white dark:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
                                 <div className="text-5xl mb-6">⚡</div>
-                                <h3 className="text-xl font-bold mb-3 text-white">Gerçek Zamanlı Analiz</h3>
-                                <p className="text-sm text-slate-400 leading-relaxed">Tüm Google Haritalar verilerini anlık olarak çeker ve şubelerinizin gerçek performansını saniyeler içinde raporlar.</p>
+                                <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Gerçek Zamanlı Analiz</h3>
+                                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Tüm Google Haritalar verilerini anlık olarak çeker ve şubelerinizin gerçek performansını saniyeler içinde raporlar.</p>
                             </div>
-                            <div className="bg-slate-800/40 backdrop-blur-md border border-white/5 p-8 rounded-3xl hover:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
+                            <div className="bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-slate-200 dark:border-white/5 p-8 rounded-3xl hover:bg-white dark:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
                                 <div className="text-5xl mb-6">🧠</div>
-                                <h3 className="text-xl font-bold mb-3 text-white">Yapay Zeka Ayrıştırma</h3>
-                                <p className="text-sm text-slate-400 leading-relaxed">Müşteri yorumlarını okur ve Temizlik, Personel, Fiyat gibi kategorilere otomatik olarak ayırarak sorunun kaynağını bulur.</p>
+                                <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Yapay Zeka Ayrıştırma</h3>
+                                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Müşteri yorumlarını okur ve Temizlik, Personel, Fiyat gibi kategorilere otomatik olarak ayırarak sorunun kaynağını bulur.</p>
                             </div>
-                            <div className="bg-slate-800/40 backdrop-blur-md border border-white/5 p-8 rounded-3xl hover:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
+                            <div className="bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-slate-200 dark:border-white/5 p-8 rounded-3xl hover:bg-white dark:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
                                 <div className="text-5xl mb-6">🚨</div>
-                                <h3 className="text-xl font-bold mb-3 text-white">Kritik Uyarı Sistemi</h3>
-                                <p className="text-sm text-slate-400 leading-relaxed">Düşüş trendlerini ve kırmızı çizgiyi aşan şikayetleri tespit edip tek tıkla şube müdürüne WhatsApp üzerinden iletir.</p>
+                                <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Kritik Uyarı Sistemi</h3>
+                                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Düşüş trendlerini ve kırmızı çizgiyi aşan şikayetleri tespit edip tek tıkla şube müdürüne WhatsApp üzerinden iletir.</p>
                             </div>
                         </div>
                     </div>
@@ -524,16 +530,16 @@ export default function Dashboard() {
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
                         
                         {/* Filtreleme ve Sıralama Çubuğu */}
-                        <div className="bg-slate-800/40 p-4 rounded-2xl border border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-                            <h2 className="text-xl font-semibold text-white">Sonuçlar ({filteredBranches.length})</h2>
+                        <div className="bg-white/80 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Sonuçlar ({filteredBranches.length})</h2>
                             
                             <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                                 <div className="flex items-center gap-2">
-                                    <label className="text-xs text-slate-400 font-bold uppercase">Puan Filtresi:</label>
+                                    <label className="text-xs text-slate-600 dark:text-slate-400 font-bold uppercase">Puan Filtresi:</label>
                                     <select 
                                         value={minScoreFilter} 
                                         onChange={e => setMinScoreFilter(Number(e.target.value))}
-                                        className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white outline-none focus:border-blue-500 cursor-pointer"
+                                        className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 cursor-pointer"
                                     >
                                         <option value={0}>Tümü</option>
                                         <option value={4.0}>4.0 ve Üzeri</option>
@@ -541,11 +547,11 @@ export default function Dashboard() {
                                     </select>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <label className="text-xs text-slate-400 font-bold uppercase">Sıralama:</label>
+                                    <label className="text-xs text-slate-600 dark:text-slate-400 font-bold uppercase">Sıralama:</label>
                                     <select 
                                         value={sortOrder} 
                                         onChange={e => setSortOrder(e.target.value)}
-                                        className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white outline-none focus:border-emerald-500 cursor-pointer"
+                                        className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-900 dark:text-white outline-none focus:border-emerald-500 cursor-pointer"
                                     >
                                         <option value="puan-azalan">Puan (Yüksekten Düşüğe)</option>
                                         <option value="puan-artan">Puan (Düşükten Yükseğe)</option>
@@ -559,26 +565,26 @@ export default function Dashboard() {
                             {filteredBranches.map((branch) => {
                                 const unread = getMockUnread(branch);
                                 return (
-                                <div key={branch.place_id} className="bg-slate-800/40 border border-white/5 hover:border-blue-500/50 p-6 rounded-2xl transition hover:bg-slate-800/60 group cursor-pointer relative" onClick={() => analyzeBranch(branch)}>
+                                <div key={branch.place_id} className="bg-white/80 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 hover:border-blue-500/50 p-6 rounded-2xl transition hover:bg-slate-50/60 dark:bg-slate-800/60 group cursor-pointer relative" onClick={() => analyzeBranch(branch)}>
                                     
                                     {/* Bildirim Balonları */}
                                     {(unread.positive > 0 || unread.negative > 0) && (
                                         <div className="absolute -top-3 -right-3 flex gap-1.5 z-10">
                                             {unread.negative > 0 && (
-                                                <div className="bg-red-500 text-white text-[11px] font-extrabold w-7 h-7 rounded-full flex items-center justify-center shadow-lg shadow-red-500/50 border-[3px] border-slate-900 animate-bounce" style={{ animationDuration: '2s' }} title={`${unread.negative} Yeni Olumsuz Yorum`}>
+                                                <div className="bg-red-500 text-slate-900 dark:text-white text-[11px] font-extrabold w-7 h-7 rounded-full flex items-center justify-center shadow-lg shadow-red-500/50 border-[3px] border-slate-900 animate-bounce" style={{ animationDuration: '2s' }} title={`${unread.negative} Yeni Olumsuz Yorum`}>
                                                     {unread.negative}
                                                 </div>
                                             )}
                                             {unread.positive > 0 && (
-                                                <div className="bg-emerald-500 text-white text-[11px] font-extrabold w-7 h-7 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/50 border-[3px] border-slate-900 animate-bounce" style={{ animationDuration: '2.5s' }} title={`${unread.positive} Yeni Olumlu Yorum`}>
+                                                <div className="bg-emerald-500 text-slate-900 dark:text-white text-[11px] font-extrabold w-7 h-7 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/50 border-[3px] border-slate-900 animate-bounce" style={{ animationDuration: '2.5s' }} title={`${unread.positive} Yeni Olumlu Yorum`}>
                                                     {unread.positive}
                                                 </div>
                                             )}
                                         </div>
                                     )}
 
-                                    <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition mb-2 pr-4">{branch.name}</h3>
-                                    <p className="text-slate-400 text-sm mb-4 line-clamp-2">{branch.address}</p>
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:text-blue-400 transition mb-2 pr-4">{branch.name}</h3>
+                                    <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2">{branch.address}</p>
 
                                     <div className="flex items-center gap-4 text-sm font-mono">
                                         <div className="flex items-center text-yellow-400 gap-1">
@@ -590,7 +596,7 @@ export default function Dashboard() {
                                         </div>
                                     </div>
 
-                                    <button className="mt-4 w-full py-2 bg-slate-700 hover:bg-emerald-600 rounded-lg text-sm font-semibold transition text-slate-200 hover:text-white">
+                                    <button className="mt-4 w-full py-2 bg-slate-200 dark:bg-slate-700 hover:bg-emerald-600 rounded-lg text-sm font-semibold transition text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:text-white">
                                         Analize Git →
                                     </button>
                                 </div>
@@ -603,8 +609,8 @@ export default function Dashboard() {
                 {loading && view === 'dashboard' && (
                     <div className="text-center py-20">
                         <div className="animate-spin w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-6"></div>
-                        <h2 className="text-2xl font-bold text-white">Veriler Analiz Ediliyor...</h2>
-                        <p className="text-slate-400">Yorumlar, trafik verileri ve sağlık skoru hesaplanıyor.</p>
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Veriler Analiz Ediliyor...</h2>
+                        <p className="text-slate-600 dark:text-slate-400">Yorumlar, trafik verileri ve sağlık skoru hesaplanıyor.</p>
                     </div>
                 )}
 
@@ -629,7 +635,7 @@ export default function Dashboard() {
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                                             Seçilenleri İlet {selectedAlerts.length > 0 && `(${selectedAlerts.length})`}
                                         </button>
-                                        <button onClick={handleIgnoreSelected} className="flex items-center gap-1.5 bg-slate-500/20 hover:bg-slate-500/40 text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-slate-500/30">
+                                        <button onClick={handleIgnoreSelected} className="flex items-center gap-1.5 bg-slate-500/20 hover:bg-slate-500/40 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold transition border border-slate-500/30">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
                                             Yoksay
                                         </button>
@@ -688,10 +694,10 @@ export default function Dashboard() {
                         <div className="lg:col-span-1 space-y-6">
 
                             {/* Ana Skor Kartı */}
-                            <div className="bg-slate-800/50 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-xl relative overflow-hidden group">
+                            <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-md rounded-3xl p-8 border border-slate-300 dark:border-white/10 shadow-xl relative overflow-hidden group">
                                 <div className={`absolute top-0 right-0 w-32 h-32 bg-current opacity-10 blur-3xl rounded-full ${getScoreColor(data.health_score)}`}></div>
 
-                                <h3 className="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-2">Şube Sağlık Skoru</h3>
+                                <h3 className="text-slate-600 dark:text-slate-400 text-sm font-semibold uppercase tracking-wider mb-2">Şube Sağlık Skoru</h3>
                                 <div className="flex items-center justify-between">
                                     <span className={`text-7xl font-bold tracking-tighter ${getScoreColor(data.health_score)} drop-shadow-lg`}>
                                         {data.health_score}
@@ -705,7 +711,7 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* İlerleme Çubuğu */}
-                                <div className="w-full bg-slate-700/50 h-3 rounded-full mt-6 overflow-hidden">
+                                <div className="w-full bg-slate-200/50 dark:bg-slate-700/50 h-3 rounded-full mt-6 overflow-hidden">
                                     <div
                                         className={`h-full rounded-full transition-all duration-1000 ease-out ${getScoreColor(data.health_score).replace('text-', 'bg-')}`}
                                         style={{ width: `${data.health_score}%` }}
@@ -713,15 +719,15 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* Sağlık Raporu Açıklaması */}
-                                <div className="mt-4 text-xs text-slate-400 bg-slate-900/50 p-3 rounded-xl border border-white/5 leading-relaxed">
-                                    <strong className="text-slate-300">Bu skor ne anlama geliyor?</strong><br/>
+                                <div className="mt-4 text-xs text-slate-600 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-200 dark:border-white/5 leading-relaxed">
+                                    <strong className="text-slate-700 dark:text-slate-300">Bu skor ne anlama geliyor?</strong><br/>
                                     Şube sağlık skoru; Google puanı (%60), toplam yorum hacmi (%20) ve son yorumların duygu analizi (%20) birleştirilerek algoritma tarafından 100 üzerinden hesaplanan genel itibar endeksidir.
                                 </div>
                             </div>
 
                             {/* Trend Grafiği (Son 3 Ay) */}
-                            <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-white/5 hover:border-white/10 transition shadow-xl h-[250px] relative">
-                                <h3 className="text-slate-400 text-xs font-bold uppercase mb-4 flex items-center gap-2">
+                            <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 transition shadow-xl h-[250px] relative">
+                                <h3 className="text-slate-600 dark:text-slate-400 text-xs font-bold uppercase mb-4 flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                                     Son 3 Ay Trend Analizi (Gerçek Veri Simülasyonu)
                                 </h3>
@@ -753,25 +759,25 @@ export default function Dashboard() {
                             {/* Başlık / Geri Dön */}
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div className="space-y-2 w-full md:w-auto">
-                                    <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
                                         {data.branch_name}
                                     </h2>
                                 </div>
-                                <button onClick={() => setView('search')} className="text-sm text-blue-400 hover:underline shrink-0">← Listeye Dön</button>
+                                <button onClick={() => setView('search')} className="text-sm text-blue-600 dark:text-blue-400 hover:underline shrink-0">← Listeye Dön</button>
                             </div>
 
                             {/* Detay Kartları Grid (Son Yorumlar & Puan) */}
                             <div className="grid grid-cols-2 gap-4">
                                 {/* Google Yorumları Listesi */}
-                                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-white/5 hover:border-white/10 transition group col-span-2 md:col-span-1 h-[320px] overflow-y-auto custom-scrollbar flex flex-col relative">
-                                    <div className="flex items-center justify-between gap-2 mb-4 text-slate-400 sticky top-0 bg-slate-800/90 p-1 rounded-lg backdrop-blur-md z-10 border border-slate-700/50">
+                                <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 transition group col-span-2 md:col-span-1 h-[320px] overflow-y-auto custom-scrollbar flex flex-col relative">
+                                    <div className="flex items-center justify-between gap-2 mb-4 text-slate-600 dark:text-slate-400 sticky top-0 bg-white dark:bg-slate-800/90 p-1 rounded-lg backdrop-blur-md z-10 border border-slate-300/50 dark:border-slate-700/50">
                                         <div className="flex items-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h6" /><path d="M22 12h-6" /><path d="M12 2v6" /><path d="M12 22v-6" /><path d="M20 7l-3-3" /><path d="M4 20l3-3" /><path d="M4 7h16" /><path d="M4 17h16" /></svg>
-                                            <span className="text-xs font-bold uppercase text-white">Son Müşteri Yorumları</span>
+                                            <span className="text-xs font-bold uppercase text-slate-900 dark:text-white">Son Müşteri Yorumları</span>
                                         </div>
                                         <button 
                                             onClick={() => setIsReviewsModalOpen(true)}
-                                            className="text-xs text-blue-400 hover:text-blue-300 font-semibold bg-blue-500/10 hover:bg-blue-500/20 px-2 py-1 rounded transition flex items-center gap-1 border border-blue-500/20"
+                                            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-300 font-semibold bg-blue-500/10 hover:bg-blue-500/20 px-2 py-1 rounded transition flex items-center gap-1 border border-blue-500/20"
                                         >
                                             Son Mesajları Oku
                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"></path><path d="M10 14L21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
@@ -781,9 +787,9 @@ export default function Dashboard() {
                                     <div className="space-y-4">
                                         {data.reviews && data.reviews.length > 0 ? (
                                             data.reviews.map((review: any, idx: number) => (
-                                                <div key={idx} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                                                <div key={idx} className="border-b border-slate-200 dark:border-white/5 pb-3 last:border-0 last:pb-0">
                                                     <div className="flex justify-between items-start mb-1">
-                                                        <span className="text-sm font-semibold text-white">{review.author_name}</span>
+                                                        <span className="text-sm font-semibold text-slate-900 dark:text-white">{review.author_name}</span>
                                                         <span className="text-xs text-slate-500">{review.relative_time_description}</span>
                                                     </div>
                                                     <div className="flex gap-1 mb-2 items-center">
@@ -794,7 +800,7 @@ export default function Dashboard() {
                                                             <span key={ci} className="ml-2 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">{cat}</span>
                                                         ))}
                                                     </div>
-                                                    <p className="text-xs text-slate-300 leading-relaxed italic">
+                                                    <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
                                                         "{review.text && review.text.length > 100 ? review.text.substring(0, 100) + '...' : review.text}"
                                                     </p>
                                                 </div>
@@ -809,18 +815,18 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* Platform Puanı ve Dağılım */}
-                                <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-white/5 hover:border-white/10 transition group flex flex-col justify-between">
+                                <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 transition group flex flex-col justify-between">
                                     <div>
-                                        <div className="flex items-center justify-between mb-2 text-slate-400">
+                                        <div className="flex items-center justify-between mb-2 text-slate-600 dark:text-slate-400">
                                             <div className="flex items-center gap-2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                                                 <span className="text-xs font-bold uppercase">Puan</span>
                                             </div>
-                                            <span className="text-xs text-slate-500 font-medium bg-slate-700/50 px-2 py-0.5 rounded-lg border border-white/5">
+                                            <span className="text-xs text-slate-500 font-medium bg-slate-200/50 dark:bg-slate-700/50 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-white/5">
                                                 {data.metrics.google_reviews.toLocaleString()} Yorum
                                             </span>
                                         </div>
-                                        <div className="text-3xl font-bold text-white group-hover:text-yellow-400 transition mb-4 flex items-end gap-2">
+                                        <div className="text-3xl font-bold text-slate-900 dark:text-white group-hover:text-yellow-400 transition mb-4 flex items-end gap-2">
                                             <span>{data.ratings[0].score}</span> 
                                             <span className="text-slate-500 text-lg font-normal mb-1">/ 5.0</span>
                                         </div>
@@ -834,14 +840,14 @@ export default function Dashboard() {
                                                 
                                                 return (
                                                     <div key={star} className="flex items-center gap-2 text-xs">
-                                                        <div className="flex items-center gap-2 w-16 text-slate-400 font-medium justify-between">
+                                                        <div className="flex items-center gap-2 w-16 text-slate-600 dark:text-slate-400 font-medium justify-between">
                                                             <div className="flex items-center gap-1">
                                                                 <span>{star}</span>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
                                                             </div>
                                                             <span className="text-slate-500 font-mono text-[10px]">{count.toLocaleString()}</span>
                                                         </div>
-                                                        <div className="flex-1 h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                                                        <div className="flex-1 h-2 bg-slate-200/50 dark:bg-slate-700/50 rounded-full overflow-hidden">
                                                             <div 
                                                                 className="h-full bg-yellow-400/80 rounded-full transition-all duration-1000 ease-out" 
                                                                 style={{ width: `${pct}%` }}
@@ -852,12 +858,12 @@ export default function Dashboard() {
                                             })}
                                         </div>
 
-                                        <div className="mt-5 pt-4 border-t border-white/5">
+                                        <div className="mt-5 pt-4 border-t border-slate-200 dark:border-white/5">
                                             <a 
                                                 href={data.map_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.branch_name)}`} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-slate-300 hover:text-blue-400 bg-slate-700/50 hover:bg-slate-700/80 p-2.5 rounded-xl border border-white/5 transition"
+                                                className="flex items-center justify-center gap-2 w-full text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:text-blue-400 bg-slate-200/50 dark:bg-slate-700/50 hover:bg-slate-200 dark:bg-slate-700/80 p-2.5 rounded-xl border border-slate-200 dark:border-white/5 transition"
                                                 title="Google Haritalar'da Aç"
                                             >
                                                 <span>Haritalarda Aç</span>
@@ -869,8 +875,8 @@ export default function Dashboard() {
                             </div>
 
                             {/* Harita / Konum Kartı */}
-                            <div className="bg-slate-800/50 backdrop-blur-md rounded-3xl p-6 border border-white/10 shadow-xl h-[200px] relative overflow-hidden">
-                                <h3 className="text-white font-semibold mb-4 flex items-center gap-2 relative z-10">
+                            <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-md rounded-3xl p-6 border border-slate-300 dark:border-white/10 shadow-xl h-[200px] relative overflow-hidden">
+                                <h3 className="text-slate-900 dark:text-white font-semibold mb-4 flex items-center gap-2 relative z-10">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                                     Şube Konumu
                                 </h3>
@@ -887,30 +893,30 @@ export default function Dashboard() {
                                     ></iframe>
                                 </div>
                                 <div className="absolute bottom-4 left-6 z-20">
-                                    <div className="bg-slate-900/80 backdrop-blur text-xs px-3 py-1.5 rounded-lg border border-white/10 text-slate-300">
+                                    <div className="bg-slate-100/90 dark:bg-slate-900/80 backdrop-blur text-xs px-3 py-1.5 rounded-lg border border-slate-300 dark:border-white/10 text-slate-700 dark:text-slate-300">
                                         Lat: {data.coords.lat?.toFixed(4)}, Lng: {data.coords.lng?.toFixed(4)}
                                     </div>
                                 </div>
                             </div>
 
                             {/* İletilen Şikayet Logları (En Alta Alındı) */}
-                            <div className="bg-slate-800/50 backdrop-blur-md rounded-3xl p-6 border border-white/10 shadow-xl h-[320px] flex flex-col relative overflow-hidden group">
+                            <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-md rounded-3xl p-6 border border-slate-300 dark:border-white/10 shadow-xl h-[320px] flex flex-col relative overflow-hidden group">
                                 <div className="flex justify-between items-center mb-4 z-10 relative">
-                                    <h3 className="text-white font-semibold flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                    <h3 className="text-slate-900 dark:text-white font-semibold flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                         İletilen Şikayet Logları
                                     </h3>
                                 </div>
 
-                                <div className="flex-1 w-full relative rounded-xl overflow-y-auto border border-white/5 bg-slate-900/50 p-4 space-y-3 custom-scrollbar">
+                                <div className="flex-1 w-full relative rounded-xl overflow-y-auto border border-slate-200 dark:border-white/5 bg-slate-100/50 dark:bg-slate-900/50 p-4 space-y-3 custom-scrollbar">
                                     {sentLogs.filter(log => log.branch_name === data.branch_name).length > 0 ? (
                                         sentLogs.filter(log => log.branch_name === data.branch_name).map((log, i) => (
                                             <div key={i} className="border-l-2 border-blue-500 pl-3">
                                                 <div className="flex justify-between items-start">
-                                                    <span className="text-xs font-bold text-white">{log.type} İletisi</span>
+                                                    <span className="text-xs font-bold text-slate-900 dark:text-white">{log.type} İletisi</span>
                                                     <span className="text-[10px] text-slate-500">{log.date}</span>
                                                 </div>
-                                                <p className="text-xs text-slate-400 mt-1">{log.message}</p>
+                                                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{log.message}</p>
                                             </div>
                                         ))
                                     ) : (
@@ -931,28 +937,28 @@ export default function Dashboard() {
             {/* --- SETTINGS MODAL --- */}
             {isSettingsOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+                    <div className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
                         <div className="flex justify-between items-center p-5 border-b border-slate-800">
                             <h2 className="text-xl font-bold">Ayarlar & Şube Rehberi</h2>
-                            <button onClick={() => setIsSettingsOpen(false)} className="text-slate-400 hover:text-white transition">✕</button>
+                            <button onClick={() => setIsSettingsOpen(false)} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white transition">✕</button>
                         </div>
                         
-                        <div className="flex border-b border-slate-800 bg-slate-900/50">
+                        <div className="flex border-b border-slate-800 bg-slate-100/50 dark:bg-slate-900/50">
                             <button 
                                 onClick={() => setActiveSettingsTab('current')} 
-                                className={`flex-1 py-3 text-sm font-semibold transition ${activeSettingsTab === 'current' ? 'text-blue-400 border-b-2 border-blue-400 bg-slate-800/50' : 'text-slate-400 hover:text-slate-200'}`}
+                                className={`flex-1 py-3 text-sm font-semibold transition ${activeSettingsTab === 'current' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
                             >
                                 Mevcut Şube ({data?.branch_name || 'Yok'})
                             </button>
                             <button 
                                 onClick={() => setActiveSettingsTab('all')} 
-                                className={`flex-1 py-3 text-sm font-semibold transition ${activeSettingsTab === 'all' ? 'text-blue-400 border-b-2 border-blue-400 bg-slate-800/50' : 'text-slate-400 hover:text-slate-200'}`}
+                                className={`flex-1 py-3 text-sm font-semibold transition ${activeSettingsTab === 'all' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
                             >
                                 Tüm Rehber
                             </button>
                             <button 
                                 onClick={() => setActiveSettingsTab('admin')} 
-                                className={`flex-1 py-3 text-sm font-semibold transition ${activeSettingsTab === 'admin' ? 'text-emerald-400 border-b-2 border-emerald-400 bg-slate-800/50' : 'text-slate-400 hover:text-slate-200'}`}
+                                className={`flex-1 py-3 text-sm font-semibold transition ${activeSettingsTab === 'admin' ? 'text-emerald-400 border-b-2 border-emerald-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
                             >
                                 Yönetici Profili
                             </button>
@@ -963,28 +969,28 @@ export default function Dashboard() {
                                 <div className="space-y-6 animate-fade-in">
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center mb-2">
-                                            <h3 className="text-white font-bold text-lg">Kayıtlı Yöneticiler</h3>
+                                            <h3 className="text-slate-900 dark:text-white font-bold text-lg">Kayıtlı Yöneticiler</h3>
                                             {!isAdminFormOpen && (
-                                                <button onClick={handleAddNewAdmin} className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded transition shadow-lg shadow-emerald-500/20">
+                                                <button onClick={handleAddNewAdmin} className="text-xs bg-emerald-600 hover:bg-emerald-500 text-slate-900 dark:text-white font-bold px-3 py-1.5 rounded transition shadow-lg shadow-emerald-500/20">
                                                     + Yeni Ekle
                                                 </button>
                                             )}
                                         </div>
                                         {admins.length === 0 ? (
-                                            <div className="text-slate-500 text-sm py-4 text-center bg-slate-800/30 rounded-xl border border-slate-700/50">Kayıtlı yönetici bulunmuyor.</div>
+                                            <div className="text-slate-500 text-sm py-4 text-center bg-white dark:bg-slate-800/30 rounded-xl border border-slate-300/50 dark:border-slate-700/50">Kayıtlı yönetici bulunmuyor.</div>
                                         ) : (
                                             admins.map(admin => (
-                                                <div key={admin.id} className={`bg-slate-800/50 p-4 rounded-xl border flex justify-between items-center group transition hover:border-slate-500 ${editingAdminId === admin.id ? 'border-emerald-500/50' : 'border-slate-700'}`}>
+                                                <div key={admin.id} className={`bg-white/80 dark:bg-slate-800/50 p-4 rounded-xl border flex justify-between items-center group transition hover:border-slate-500 ${editingAdminId === admin.id ? 'border-emerald-500/50' : 'border-slate-300 dark:border-slate-700'}`}>
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center font-bold border border-emerald-500/30">
                                                             {admin.name.charAt(0).toUpperCase()}
                                                         </div>
                                                         <div>
-                                                            <div className="font-bold text-white text-sm">{admin.name}</div>
-                                                            <div className="text-xs text-slate-400 flex gap-2 mt-0.5 items-center">
+                                                            <div className="font-bold text-slate-900 dark:text-white text-sm">{admin.name}</div>
+                                                            <div className="text-xs text-slate-600 dark:text-slate-400 flex gap-2 mt-0.5 items-center">
                                                                 <span>{admin.phone}</span>
                                                                 {admin.email && <span>• {admin.email}</span>}
-                                                                {admin.receive_emails && <span className="text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30">✉️ E-Posta Alır</span>}
+                                                                {admin.receive_emails && <span className="text-[10px] bg-blue-500/20 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30">✉️ E-Posta Alır</span>}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -995,14 +1001,14 @@ export default function Dashboard() {
                                                                 setNewAdmin({ name: admin.name, email: admin.email, phone: admin.phone, receive_emails: admin.receive_emails });
                                                                 setIsAdminFormOpen(true);
                                                             }} 
-                                                            className="text-blue-400 hover:text-white hover:bg-blue-500 p-2 bg-blue-500/10 rounded-lg transition"
+                                                            className="text-blue-600 dark:text-blue-400 hover:text-slate-900 dark:text-white hover:bg-blue-500 p-2 bg-blue-500/10 rounded-lg transition"
                                                             title="Düzenle"
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                                                         </button>
                                                         <button 
                                                             onClick={() => deleteAdmin(admin.id)} 
-                                                            className="text-red-400 hover:text-white hover:bg-red-500 p-2 bg-red-500/10 rounded-lg transition"
+                                                            className="text-red-400 hover:text-slate-900 dark:text-white hover:bg-red-500 p-2 bg-red-500/10 rounded-lg transition"
                                                             title="Sil"
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
@@ -1014,53 +1020,53 @@ export default function Dashboard() {
                                     </div>
 
                                     {isAdminFormOpen && (
-                                        <div className="bg-slate-800/30 p-5 rounded-xl border border-emerald-500/30 space-y-4 relative animate-fade-in">
+                                        <div className="bg-white dark:bg-slate-800/30 p-5 rounded-xl border border-emerald-500/30 space-y-4 relative animate-fade-in">
                                             <button 
                                                 onClick={() => {
                                                     setIsAdminFormOpen(false);
                                                     setEditingAdminId(null);
                                                 }}
-                                                className="absolute top-3 right-3 text-slate-400 hover:text-white transition"
+                                                className="absolute top-3 right-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white transition"
                                             >✕</button>
                                             
-                                            <h3 className="text-white font-bold text-sm flex items-center gap-2">
+                                            <h3 className="text-slate-900 dark:text-white font-bold text-sm flex items-center gap-2">
                                                 {editingAdminId ? '✏️ Yöneticiyi Düzenle' : '➕ Yeni Yönetici Ekle'}
                                             </h3>
                                             
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-1">
-                                                    <label className="text-xs font-semibold text-slate-400 uppercase">İsim Soyisim</label>
+                                                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">İsim Soyisim</label>
                                                     <input 
                                                         type="text" 
                                                         value={newAdmin.name}
                                                         onChange={e => setNewAdmin({...newAdmin, name: e.target.value})}
-                                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition" 
+                                                        className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white text-sm outline-none focus:border-emerald-500 transition" 
                                                         placeholder="Örn: Ali Yılmaz"
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-xs font-semibold text-slate-400 uppercase">Cep Telefonu</label>
+                                                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Cep Telefonu</label>
                                                     <input 
                                                         type="text" 
                                                         value={newAdmin.phone}
                                                         onChange={e => setNewAdmin({...newAdmin, phone: e.target.value})}
-                                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition" 
+                                                        className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white text-sm outline-none focus:border-emerald-500 transition" 
                                                         placeholder="Örn: 0532 123 45 67"
                                                     />
                                                 </div>
                                                 <div className="space-y-1 md:col-span-2">
-                                                    <label className="text-xs font-semibold text-slate-400 uppercase">E-Posta Adresi (Opsiyonel)</label>
+                                                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">E-Posta Adresi (Opsiyonel)</label>
                                                     <input 
                                                         type="email" 
                                                         value={newAdmin.email}
                                                         onChange={e => setNewAdmin({...newAdmin, email: e.target.value})}
-                                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm outline-none focus:border-emerald-500 transition" 
+                                                        className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white text-sm outline-none focus:border-emerald-500 transition" 
                                                         placeholder="Örn: ali@sirket.com"
                                                     />
                                                 </div>
                                                 
                                                 <div className="space-y-1 md:col-span-2 mt-2">
-                                                    <label className="flex items-center gap-3 cursor-pointer p-3 bg-slate-900 border border-slate-700 hover:border-emerald-500/50 rounded-lg transition">
+                                                    <label className="flex items-center gap-3 cursor-pointer p-3 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-emerald-500/50 rounded-lg transition">
                                                         <input 
                                                             type="checkbox" 
                                                             checked={newAdmin.receive_emails}
@@ -1068,8 +1074,8 @@ export default function Dashboard() {
                                                             className="w-5 h-5 accent-emerald-500 rounded cursor-pointer"
                                                         />
                                                         <div className="flex flex-col">
-                                                            <span className="text-sm font-semibold text-white">Yorumları E-Posta Olarak Al</span>
-                                                            <span className="text-xs text-slate-400">Yeni bir yorum geldiğinde anında bildirim e-postası gönderilsin.</span>
+                                                            <span className="text-sm font-semibold text-slate-900 dark:text-white">Yorumları E-Posta Olarak Al</span>
+                                                            <span className="text-xs text-slate-600 dark:text-slate-400">Yeni bir yorum geldiğinde anında bildirim e-postası gönderilsin.</span>
                                                         </div>
                                                     </label>
                                                 </div>
@@ -1081,13 +1087,13 @@ export default function Dashboard() {
                                                         setIsAdminFormOpen(false);
                                                         setEditingAdminId(null);
                                                     }}
-                                                    className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-lg transition text-sm"
+                                                    className="flex-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-600 text-slate-900 dark:text-white font-bold py-3 rounded-lg transition text-sm"
                                                 >
                                                     İptal
                                                 </button>
                                                 <button 
                                                     onClick={saveAdmin}
-                                                    className="flex-[2] bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-emerald-500/20 text-sm"
+                                                    className="flex-[2] bg-emerald-600 hover:bg-emerald-500 text-slate-900 dark:text-white font-bold py-3 rounded-lg transition shadow-lg shadow-emerald-500/20 text-sm"
                                                 >
                                                     {editingAdminId ? 'Değişiklikleri Kaydet' : 'Sisteme Kaydet'}
                                                 </button>
@@ -1098,15 +1104,15 @@ export default function Dashboard() {
                             )}
                             {activeSettingsTab === 'current' && data && (
                                 <div className="space-y-4 animate-fade-in">
-                                    <div className="bg-slate-800/50 p-5 rounded-xl border border-slate-700">
-                                        <label className="block text-sm font-medium text-slate-300 mb-3">Müdür Telefon Numarası</label>
+                                    <div className="bg-white/80 dark:bg-slate-800/50 p-5 rounded-xl border border-slate-300 dark:border-slate-700">
+                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Müdür Telefon Numarası</label>
                                         <div className="flex flex-col sm:flex-row gap-3">
                                             <input 
                                                 type="text" 
                                                 value={managerPhone} 
                                                 onChange={(e) => setManagerPhone(e.target.value)} 
                                                 placeholder="Örn: 0555 123 45 67" 
-                                                className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white outline-none focus:border-blue-500 transition"
+                                                className="flex-1 bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white outline-none focus:border-blue-500 transition"
                                             />
                                             <button 
                                                 onClick={async () => {
@@ -1121,7 +1127,7 @@ export default function Dashboard() {
                                                         console.error(e);
                                                     }
                                                 }}
-                                                className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-lg text-white font-medium transition"
+                                                className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-lg text-slate-900 dark:text-white font-medium transition"
                                             >
                                                 Kaydet
                                             </button>
@@ -1137,14 +1143,14 @@ export default function Dashboard() {
                                         <div className="text-center py-10 text-slate-500">Henüz kaydedilmiş bir şube numarası bulunmuyor.</div>
                                     ) : (
                                         allPhones.map((p, i) => (
-                                            <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-slate-800/30 border border-slate-700 rounded-xl gap-3 hover:bg-slate-800/50 transition">
-                                                <div className="font-medium text-slate-200">{p.name}</div>
+                                            <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 rounded-xl gap-3 hover:bg-white/80 dark:bg-slate-800/50 transition">
+                                                <div className="font-medium text-slate-800 dark:text-slate-200">{p.name}</div>
                                                 <div className="flex gap-2 w-full sm:w-auto">
                                                     <input 
                                                         type="text"
                                                         defaultValue={p.phone}
                                                         onChange={(e) => p.newPhone = e.target.value}
-                                                        className="w-full sm:w-40 bg-slate-900 border border-slate-700 rounded-md px-3 py-1.5 text-sm outline-none focus:border-blue-500 text-slate-300"
+                                                        className="w-full sm:w-40 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md px-3 py-1.5 text-sm outline-none focus:border-blue-500 text-slate-700 dark:text-slate-300"
                                                     />
                                                     <button 
                                                         onClick={async () => {
@@ -1158,7 +1164,7 @@ export default function Dashboard() {
                                                                 if (res.ok) alert("Güncellendi!");
                                                             } catch (e) { console.error(e); }
                                                         }}
-                                                        className="bg-slate-700 hover:bg-slate-600 border border-slate-600 px-3 py-1.5 rounded-md text-sm transition text-white"
+                                                        className="bg-slate-200 dark:bg-slate-700 hover:bg-slate-600 border border-slate-600 px-3 py-1.5 rounded-md text-sm transition text-slate-900 dark:text-white"
                                                     >
                                                         Güncelle
                                                     </button>
@@ -1176,26 +1182,26 @@ export default function Dashboard() {
             {/* --- REVIEWS MODAL (Son Mesajları Oku) --- */}
             {isReviewsModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
-                        <div className="flex justify-between items-center p-5 border-b border-slate-800 bg-slate-900/50">
+                    <div className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+                        <div className="flex justify-between items-center p-5 border-b border-slate-800 bg-slate-100/50 dark:bg-slate-900/50">
                             <h2 className="text-xl font-bold flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                                 Son 5 Müşteri Yorumu ({data?.branch_name})
                             </h2>
-                            <button onClick={() => setIsReviewsModalOpen(false)} className="text-slate-400 hover:text-white transition bg-slate-800 hover:bg-slate-700 p-2 rounded-lg">✕</button>
+                            <button onClick={() => setIsReviewsModalOpen(false)} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white transition bg-white dark:bg-slate-800 hover:bg-slate-200 dark:bg-slate-700 p-2 rounded-lg">✕</button>
                         </div>
 
                         <div className="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-4">
                             {data?.reviews && data.reviews.length > 0 ? (
                                 data.reviews.slice(0, 5).map((review: any, idx: number) => (
-                                    <div key={idx} className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 hover:bg-slate-800/60 transition shadow-sm">
+                                    <div key={idx} className="bg-white/80 dark:bg-slate-800/40 border border-slate-300/50 dark:border-slate-700/50 rounded-xl p-5 hover:bg-slate-50/60 dark:bg-slate-800/60 transition shadow-sm">
                                         <div className="flex justify-between items-start mb-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center font-bold text-lg text-slate-300">
+                                                <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-lg text-slate-700 dark:text-slate-300">
                                                     {review.author_name.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <div className="font-bold text-white">{review.author_name}</div>
+                                                    <div className="font-bold text-slate-900 dark:text-white">{review.author_name}</div>
                                                     <div className="text-xs text-slate-500">{review.relative_time_description}</div>
                                                 </div>
                                             </div>
@@ -1209,12 +1215,12 @@ export default function Dashboard() {
                                         {review.ai_categories && review.ai_categories.length > 0 && (
                                             <div className="flex gap-2 mb-3">
                                                 {review.ai_categories.map((cat: string, ci: number) => (
-                                                    <span key={ci} className="text-[10px] font-bold uppercase px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">{cat}</span>
+                                                    <span key={ci} className="text-[10px] font-bold uppercase px-2 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">{cat}</span>
                                                 ))}
                                             </div>
                                         )}
                                         
-                                        <p className="text-sm text-slate-300 leading-relaxed bg-slate-900/50 p-4 rounded-lg border border-slate-800 italic">
+                                        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed bg-slate-100/50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-800 italic">
                                             "{review.text}"
                                         </p>
                                     </div>
