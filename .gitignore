@@ -49,7 +49,11 @@ playwright/.cache/
 .antigravityignore
 *.log
 *.png
+# Ignore json files but exclude specific ones
 *.json
+!package.json
+!package-lock.json
+!tsconfig.json
 !analyze_test.json
 !analyze_full.json
 !output_test_ps.json
