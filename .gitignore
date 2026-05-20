@@ -48,7 +48,6 @@ playwright/.cache/
 # Antigravity Specific
 .antigravityignore
 *.log
-*.png
 # Ignore json files but exclude specific ones
 *.json
 !package.json

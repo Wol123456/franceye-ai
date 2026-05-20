@@ -15,13 +15,7 @@ const TURKISH_CITIES = [
 ];
 
 const getMockUnread = (branch: any) => {
-    if (!branch.user_ratings_total || branch.user_ratings_total < 10) return { positive: 0, negative: 0 };
-    const seed = branch.user_ratings_total;
-    if (seed % 3 === 0) return { positive: 0, negative: 0 }; 
-    return {
-        positive: (seed % 5) + 1,
-        negative: (seed % 3)
-    };
+    return { positive: 0, negative: 0 };
 };
 
 export default function Dashboard() {
