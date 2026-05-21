@@ -881,7 +881,13 @@ export default function Dashboard() {
                                     Şube Konumu
                                 </h3>
                                 {/* Basit Harita Görseli veya iframe */}
-                                <div className="absolute inset-0 z-0 opacity-40 hover:opacity-100 transition duration-700">
+                                <a 
+                                    href={data.map_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.branch_name)}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="absolute inset-0 z-0 opacity-40 hover:opacity-100 transition duration-700 block cursor-pointer"
+                                    title="Google Haritalar'da Aç"
+                                >
                                     <iframe
                                         width="100%"
                                         height="100%"
@@ -891,7 +897,7 @@ export default function Dashboard() {
                                         allowFullScreen
                                         loading="lazy"
                                     ></iframe>
-                                </div>
+                                </a>
                                 <div className="absolute bottom-4 left-6 z-20">
                                     <div className="bg-slate-100/90 dark:bg-slate-900/80 backdrop-blur text-xs px-3 py-1.5 rounded-lg border border-slate-300 dark:border-white/10 text-slate-700 dark:text-slate-300">
                                         Lat: {data.coords.lat?.toFixed(4)}, Lng: {data.coords.lng?.toFixed(4)}
