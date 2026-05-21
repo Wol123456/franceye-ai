@@ -275,9 +275,8 @@ async def analyze_branch(request: BranchRequest):
             if request.place_id:
                 final_url = f"https://www.google.com/maps/search/?api=1&query=Google&query_place_id={request.place_id}"
             else:
-                lat = g_data.get("coords", {}).get("lat", 0)
-                lng = g_data.get("coords", {}).get("lng", 0)
-                final_url = f"https://www.google.com/maps/search/?api=1&query={lat},{lng}"
+                encoded_name = urllib.parse.quote(request.branch_name)
+                final_url = f"https://www.google.com/maps/search/?api=1&query={encoded_name}"
                 
         # Generate 3-month score history (12 weeks) based on Google Score
         score_history = []
