@@ -138,13 +138,14 @@ def fetch_google_data(query: str = None, place_id: str = None):
         return None
         
     # 3. Format
+    query_name = urllib.parse.quote(details.get("name", "place"))
     formatted_data = {
         "name": details.get("name", ""),
         "score": details.get("rating", 0.0),
         "review_count": details.get("user_ratings_total", 0),
         "coords": details.get("geometry", {}).get("location", {"lat": 0, "lng": 0}),
         "reviews": details.get("reviews", []),
-        "url": f"https://www.google.com/maps/place/?q=place_id:{target_id}",
+        "url": f"https://www.google.com/maps/search/?api=1&query={query_name}&query_place_id={target_id}",
         "website": details.get("website", "")
     }
     

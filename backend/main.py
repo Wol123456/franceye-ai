@@ -273,7 +273,7 @@ async def analyze_branch(request: BranchRequest):
         final_url = g_data.get("url")
         if not final_url:
             if request.place_id:
-                final_url = f"https://www.google.com/maps/place/?q=place_id:{request.place_id}"
+                final_url = f"https://www.google.com/maps/search/?api=1&query=Google&query_place_id={request.place_id}"
             else:
                 lat = g_data.get("coords", {}).get("lat", 0)
                 lng = g_data.get("coords", {}).get("lng", 0)
