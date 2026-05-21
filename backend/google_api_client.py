@@ -4,6 +4,14 @@ import json
 
 API_KEY = "AIzaSyD7WnKI4xrGDLV83_CBhdM5mkIWPeM_3qI"
 
+def normalize_turkish(text: str) -> str:
+    if not text:
+        return ""
+    text = text.replace("I", "ı").replace("İ", "i")
+    text = text.lower()
+    text = text.replace("ş", "s").replace("ğ", "g").replace("ü", "u").replace("ö", "o").replace("ç", "c").replace("ı", "i")
+    return text
+
 def search_places(query: str, city: str = None):
     """
     Search for places by text query and return a list of simplified place objects.
@@ -41,9 +49,13 @@ def search_places(query: str, city: str = None):
     seen_ids = set()
     seen_addresses = set()
     
+    brand_normalized = normalize_turkish(brand_part)
+    city_normalized = normalize_turkish(city) if city else ""
+
     for item in raw_results:
         # Sadece aranan tam marka adını içerenleri ekle (AVM'ler veya rakipler elenir)
-        if brand_part.lower() not in item.get("name", "").lower():
+        item_name_normalized = normalize_turkish(item.get("name", ""))
+        if brand_normalized not in item_name_normalized:
             continue
             
         place_id = item["place_id"]
@@ -51,12 +63,13 @@ def search_places(query: str, city: str = None):
         
         # Normalize address to catch Google's duplicate place entries
         clean_address = address.lower().strip()
+        address_normalized = normalize_turkish(address)
         
         if place_id in seen_ids or clean_address in seen_addresses:
             continue
             
         # Strict City Filtering
-        if city and city.lower() not in address.lower():
+        if city and city_normalized not in address_normalized:
             continue
             
         seen_ids.add(place_id)
