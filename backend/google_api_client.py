@@ -10,6 +10,7 @@ def normalize_turkish(text: str) -> str:
     text = text.replace("I", "ı").replace("İ", "i")
     text = text.lower()
     text = text.replace("ş", "s").replace("ğ", "g").replace("ü", "u").replace("ö", "o").replace("ç", "c").replace("ı", "i")
+    text = text.replace(" ", "").replace("-", "").replace("'", "")
     return text
 
 def search_places(query: str, city: str = None):
