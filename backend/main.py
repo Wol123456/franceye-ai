@@ -45,7 +45,7 @@ class AnalysisResult(BaseModel):
     health_analysis: str
     metrics: Dict[str, Any]
     ratings: List[Dict[str, Any]]
-    popular_times: List[int]
+
     coords: Dict[str, float]
     analysis_date: str
     reviews: List[Dict[str, Any]] = []
@@ -116,34 +116,12 @@ async def scrape_google_maps(query: str, place_id: str = None, target_date_str: 
         else:
             simulated_score = current_score
 
-        # 3. Popular Times Simulation based on Day of Week
-        weekday = target_date.weekday() # 0=Mon, 6=Sun
-        
-        # Seed randomness with branch name + date to make it consistent but unique per branch
-        seed_key = f"{query}_{target_date.strftime('%Y-%m-%d')}"
-        random.seed(seed_key)
-        
-        if weekday < 5: # Weekday (Mon-Fri)
-            # Office/Commute Pattern: Peaks at 08:00, 12:00, 18:00
-            pt = [0, 0, 0, 0, 0, 20, 50, 80, 60, 40, 30, 80, 70, 50, 40, 60, 90, 70, 50, 30, 20, 10, 5, 0]
-        else: # Weekend (Sat-Sun)
-            # Social Pattern: Peaks at 14:00 - 16:00, late night active
-            pt = [0, 0, 0, 0, 0, 0, 0, 10, 20, 50, 70, 80, 90, 95, 90, 80, 70, 60, 50, 40, 30, 20, 10, 5]
-        
-        # Apply deterministic noise based on the seed
-        pt = [max(0, min(100, x + random.randint(-15, 15))) for x in pt]
-        
-        # STRICT OVERRIDE: Ensure 00:00 - 05:00 is absolutely 0
-        for i in range(6):
-            pt[i] = 0
-
         return {
             "platform": "Google Maps (API+Sim)",
             "name": api_data.get("name", ""),
             "score": simulated_score,
             "review_count": simulated_reviews,
             "scale": 5,
-            "popular_times": pt, 
             "coords": api_data.get("coords", {"lat": 41.0082, "lng": 28.9784}),
             "reviews": api_data.get("reviews", []),
             "rating_distribution": generate_rating_distribution(simulated_score, simulated_reviews),
@@ -156,19 +134,11 @@ async def scrape_google_maps(query: str, place_id: str = None, target_date_str: 
         seed_key = f"{query}_mock"
         random.seed(seed_key)
         
-        mock_pt = [0, 0, 0, 0, 0, 0, 10, 30, 60, 70, 60, 80, 85, 80, 70, 60, 50, 40, 30, 20, 10, 5, 0, 0]
-        mock_pt = [max(0, min(100, x + random.randint(-20, 20))) for x in mock_pt]
-        
-        # STRICT OVERRIDE: Ensure 00:00 - 05:00 is absolutely 0
-        for i in range(6):
-            mock_pt[i] = 0
-        
         return {
             "platform": "Google Maps (Simulated)",
             "score": round(random.uniform(3.5, 4.9), 1),
             "review_count": random.randint(500, 5000),
             "scale": 5,
-            "popular_times": mock_pt,
             "coords": {"lat": 41.0 + random.uniform(-0.1, 0.1), "lng": 29.0 + random.uniform(-0.1, 0.1)},
             "reviews": MOCK_REVIEWS_DB,
             "rating_distribution": generate_rating_distribution(4.2, 1000),
@@ -330,7 +300,7 @@ async def analyze_branch(request: BranchRequest):
                 {"source": "Google Maps", "score": g_data["score"], "max": 5},
                 {"source": "Algoritma", "score": health_score, "max": 100}
             ],
-            "popular_times": g_data["popular_times"],
+
             "coords": g_data["coords"],
             "analysis_date": request.target_date or datetime.now().isoformat(),
             "reviews": final_reviews,
