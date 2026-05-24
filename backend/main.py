@@ -236,10 +236,7 @@ async def analyze_branch(request: BranchRequest):
         
         analysis_text = "Mükemmel" if health_score >= 80 else "İyi" if health_score >= 60 else "Geliştirilmeli"
         
-        final_reviews = g_data.get("reviews")
-        if not final_reviews:
-            final_reviews = MOCK_REVIEWS_DB
-            
+        final_reviews = g_data.get("reviews") or []
         # AI Review Analysis & Categorization
         critical_alerts = []
         for review in final_reviews:
