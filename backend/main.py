@@ -44,6 +44,7 @@ class ComplaintLog(BaseModel):
 
 class AnalysisResult(BaseModel):
     branch_name: str
+    place_id: str = ""
     health_score: float
     health_analysis: str
     metrics: Dict[str, Any]
@@ -296,6 +297,7 @@ async def analyze_branch(request: BranchRequest):
         
         return {
             "branch_name": final_name,
+            "place_id": request.place_id or "",
             "health_score": health_score,
             "health_analysis": analysis_text,
             "metrics": {
