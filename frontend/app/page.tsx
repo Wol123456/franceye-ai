@@ -729,7 +729,7 @@ export default function Dashboard() {
                             <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 transition shadow-xl h-[250px] relative">
                                 <h3 className="text-slate-600 dark:text-slate-400 text-xs font-bold uppercase mb-4 flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                                    Son 3 Ay Trend Analizi (Gerçek Veri Simülasyonu)
+                                    Son 1 Yıl Trend Analizi (Gerçek Veri Simülasyonu)
                                 </h3>
                                 <div className="h-[180px] w-full">
                                     {data.score_history && data.score_history.length > 0 ? (

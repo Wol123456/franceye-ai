@@ -245,7 +245,7 @@ async def analyze_branch(request: BranchRequest):
                 encoded_name = urllib.parse.quote(request.branch_name)
                 final_url = f"https://www.google.com/maps/search/?api=1&query={encoded_name}"
                 
-        # Generate 3-month score history (12 weeks) based on Google Score
+        # Generate 1-year score history (12 months) in 3-month intervals based on Google Score
         score_history = []
         current_date = datetime.now()
         google_score = g_data.get("score", 0)
@@ -253,25 +253,26 @@ async def analyze_branch(request: BranchRequest):
         # Seed consistently based on branch name so chart is stable
         random.seed(final_name) 
         
-        for i in range(12, -1, -1):
-            past_date = current_date - timedelta(weeks=i)
+        for i in range(12, -1, -3):
             # Add some volatility, ending exactly at google_score
-            vol = random.uniform(-0.4, 0.4) if i > 0 else 0
+            vol = random.uniform(-0.5, 0.5) if i > 0 else 0
             # Smooth out the trend
             hist_score = max(1.0, min(5.0, google_score + vol * (i / 12.0)))
+            
+            label = "Bugün" if i == 0 else f"{i} Ay Önce"
             score_history.append({
-                "date": past_date.strftime("%d %b"),
+                "date": label,
                 "score": round(hist_score, 1)
             })
 
         # Early Warning System for Dropping Trend
-        if len(score_history) >= 4:
-            recent_scores = [x["score"] for x in score_history[-4:]] # Last 4 points (approx 1 month)
+        if len(score_history) >= 3:
+            recent_scores = [x["score"] for x in score_history[-3:]] # Last 3 points (last 6 months)
             # If score dropped continuously or dropped significantly
-            if (recent_scores[0] > recent_scores[1] > recent_scores[2] > recent_scores[-1]) or (recent_scores[0] - recent_scores[-1] >= 0.3):
+            if (recent_scores[0] > recent_scores[1] > recent_scores[-1]) or (recent_scores[0] - recent_scores[-1] >= 0.4):
                 critical_alerts.insert(0, {
                     "category": "Trend Alarmı",
-                    "text": f"Son 1 ayda şube puanında keskin düşüş tespit edildi ({recent_scores[0]} -> {recent_scores[-1]}). Acil müdahale önerilir.",
+                    "text": f"Son 6 ayda şube puanında keskin düşüş tespit edildi ({recent_scores[0]} -> {recent_scores[-1]}). Acil müdahale önerilir.",
                     "author": "Yapay Zeka Erken Uyarı"
                 })
 
