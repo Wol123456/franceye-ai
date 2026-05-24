@@ -245,7 +245,7 @@ async def analyze_branch(request: BranchRequest):
                 encoded_name = urllib.parse.quote(request.branch_name)
                 final_url = f"https://www.google.com/maps/search/?api=1&query={encoded_name}"
                 
-        # Generate 1-year score history (12 months) in 3-month intervals based on Google Score
+        # Generate 1-year score history (12 months) in monthly intervals based on Google Score
         score_history = []
         current_date = datetime.now()
         google_score = g_data.get("score", 0)
@@ -253,13 +253,15 @@ async def analyze_branch(request: BranchRequest):
         # Seed consistently based on branch name so chart is stable
         random.seed(final_name) 
         
-        for i in range(12, -1, -3):
+        months_tr = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
+        for i in range(11, -1, -1):
+            past_date = current_date - timedelta(days=i*30)
             # Add some volatility, ending exactly at google_score
             vol = random.uniform(-0.5, 0.5) if i > 0 else 0
             # Smooth out the trend
-            hist_score = max(1.0, min(5.0, google_score + vol * (i / 12.0)))
+            hist_score = max(1.0, min(5.0, google_score + vol * (i / 11.0)))
             
-            label = "Bugün" if i == 0 else f"{i} Ay Önce"
+            label = "Bugün" if i == 0 else months_tr[past_date.month - 1]
             score_history.append({
                 "date": label,
                 "score": round(hist_score, 1)
