@@ -65,12 +65,20 @@ export default function Dashboard() {
     // Reviews Modal State
     const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
 
+    const fetchAllPhones = async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/all_phones`);
+            if (res.ok) setAllPhones(await res.json());
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     const openSettings = async () => {
         setIsSettingsOpen(true);
         setActiveSettingsTab('current');
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/all_phones`);
-            if (res.ok) setAllPhones(await res.json());
+            fetchAllPhones();
 
             const pRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/admins`);
             if (pRes.ok) setAdmins(await pRes.json());
@@ -1128,7 +1136,10 @@ export default function Dashboard() {
                                                             headers: {'Content-Type': 'application/json'},
                                                             body: JSON.stringify({ place_id: data.place_id, phone: managerPhone, branch_name: data.branch_name })
                                                         });
-                                                        if (res.ok) alert("Numara başarıyla kaydedildi!");
+                                                        if (res.ok) {
+                                                            alert("Numara başarıyla kaydedildi!");
+                                                            fetchAllPhones();
+                                                        }
                                                     } catch (e) {
                                                         console.error(e);
                                                     }
@@ -1167,7 +1178,10 @@ export default function Dashboard() {
                                                                     headers: {'Content-Type': 'application/json'},
                                                                     body: JSON.stringify({ place_id: p.place_id, phone: phoneToSave, branch_name: p.name })
                                                                 });
-                                                                if (res.ok) alert("Güncellendi!");
+                                                                if (res.ok) {
+                                                                    alert("Güncellendi!");
+                                                                    fetchAllPhones();
+                                                                }
                                                             } catch (e) { console.error(e); }
                                                         }}
                                                         className="bg-slate-200 dark:bg-slate-700 hover:bg-slate-600 border border-slate-600 px-3 py-1.5 rounded-md text-sm transition text-slate-900 dark:text-white"

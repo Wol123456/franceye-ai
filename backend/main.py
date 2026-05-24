@@ -1,16 +1,19 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import random
 import math
+import os
+import json
+import urllib.parse
+import uuid
 
 # Import the Real Scraper
 # Note: In a real app, use async/await for scraping or Celery. Here we call sync structure for PoC simplicity.
 # from google_maps_parser import scrape_google_maps_data
 from google_api_client import fetch_google_data, search_places
 from datetime import datetime, timedelta
-import random
 
 # --- App Setup ---
 app = FastAPI(title="FrancEye AI")
@@ -318,19 +321,56 @@ async def analyze_branch(request: BranchRequest):
         print(f"Error: {e}")
         raise HTTPException(status_code=500, detail="Scraping failed")
 
-# --- Log Endpoints ---
+# --- Database Persistence Layer ---
+DB_FILE = "app_db.json"
+
+branch_phones_db = {}
 complaints_db = []
+admins_db = [
+    {
+        "id": "1",
+        "name": "Ahmet Yılmaz",
+        "email": "ahmet@franceye.com",
+        "phone": "0532 123 45 67",
+        "receive_emails": True
+    }
+]
+
+def load_db():
+    global branch_phones_db, complaints_db, admins_db
+    if os.path.exists(DB_FILE):
+        try:
+            with open(DB_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                branch_phones_db = data.get("branch_phones", {})
+                complaints_db = data.get("complaints", [])
+                admins_db = data.get("admins", admins_db)
+        except Exception as e:
+            print("DB Load Error:", e)
+
+def save_db():
+    with open(DB_FILE, "w", encoding="utf-8") as f:
+        json.dump({
+            "branch_phones": branch_phones_db,
+            "complaints": complaints_db,
+            "admins": admins_db
+        }, f, ensure_ascii=False, indent=2)
+
+load_db()
+
+# --- Log Endpoints ---
 
 @app.post("/log_complaint")
 async def log_complaint(complaint: ComplaintLog):
     complaints_db.insert(0, complaint.dict()) # Insert at the beginning for newest first
+    save_db()
     return {"status": "success"}
 
 @app.get("/complaint_logs")
 async def get_complaint_logs():
     return complaints_db
 
-branch_phones_db = {} # Format: { "place_id": {"phone": "...", "name": "..."} }
+
 
 class PhoneUpdateRequest(BaseModel):
     place_id: str
@@ -341,6 +381,7 @@ class PhoneUpdateRequest(BaseModel):
 async def update_phone(req: PhoneUpdateRequest):
     if req.place_id:
         branch_phones_db[req.place_id] = {"phone": req.phone, "name": req.branch_name}
+        save_db()
     return {"status": "success", "phone": req.phone}
 
 @app.get("/all_phones")
@@ -350,15 +391,7 @@ async def get_all_phones():
         res.append({"place_id": pid, "name": data.get("name", "Bilinmeyen Şube"), "phone": data.get("phone", "")})
     return res
 
-admins_db = [
-    {
-        "id": "1",
-        "name": "Ahmet Yılmaz",
-        "email": "ahmet@franceye.com",
-        "phone": "0532 123 45 67",
-        "receive_emails": True
-    }
-]
+
 
 @app.get("/admins")
 async def get_admins():
@@ -370,8 +403,6 @@ class AdminProfileCreate(BaseModel):
     phone: str
     receive_emails: bool = False
 
-import uuid
-
 @app.post("/admins")
 async def add_admin(data: AdminProfileCreate):
     new_admin = {
@@ -382,12 +413,14 @@ async def add_admin(data: AdminProfileCreate):
         "receive_emails": data.receive_emails
     }
     admins_db.append(new_admin)
+    save_db()
     return {"status": "success", "admin": new_admin}
 
 @app.delete("/admins/{admin_id}")
 async def delete_admin(admin_id: str):
     global admins_db
     admins_db = [a for a in admins_db if a["id"] != admin_id]
+    save_db()
     return {"status": "success"}
 
 @app.put("/admins/{admin_id}")
@@ -398,6 +431,7 @@ async def update_admin(admin_id: str, data: AdminProfileCreate):
             a["email"] = data.email
             a["phone"] = data.phone
             a["receive_emails"] = data.receive_emails
+            save_db()
             return {"status": "success", "admin": a}
     return {"status": "error", "message": "Admin not found"}
 
