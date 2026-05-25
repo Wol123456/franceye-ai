@@ -130,7 +130,8 @@ async def scrape_google_maps(query: str, place_id: str = None, target_date_str: 
             "reviews": api_data.get("reviews", []),
             "rating_distribution": generate_rating_distribution(simulated_score, simulated_reviews),
             "url": api_data.get("url", ""),
-            "website": api_data.get("website", "")
+            "website": api_data.get("website", ""),
+            "formatted_phone_number": api_data.get("formatted_phone_number", "")
         }
     else:
         # Fallback with Simulated Data
@@ -147,7 +148,8 @@ async def scrape_google_maps(query: str, place_id: str = None, target_date_str: 
             "reviews": MOCK_REVIEWS_DB,
             "rating_distribution": generate_rating_distribution(4.2, 1000),
             "url": f"https://www.google.com/maps/search/?api=1&query={query.replace(' ', '+')}",
-            "website": "https://www.akinsoft.com.tr"
+            "website": "https://www.akinsoft.com.tr",
+            "formatted_phone_number": ""
         }
 
 def scrape_trendyol(query: str):
@@ -317,7 +319,7 @@ async def analyze_branch(request: BranchRequest):
             "website": g_data.get("website", ""),
             "score_history": score_history,
             "critical_alerts": critical_alerts,
-            "manager_phone": branch_phones_db.get(request.place_id, {}).get("phone", "")
+            "manager_phone": branch_phones_db.get(request.place_id, {}).get("phone", g_data.get("formatted_phone_number", ""))
         }
     except Exception as e:
         print(f"Error: {e}")
