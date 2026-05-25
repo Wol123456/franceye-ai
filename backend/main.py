@@ -8,6 +8,11 @@ import os
 import json
 import urllib.parse
 import uuid
+import firebase_admin
+from firebase_admin import credentials, firestore
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Import the Real Scraper
 # Note: In a real app, use async/await for scraping or Celery. Here we call sync structure for PoC simplicity.
@@ -325,53 +330,47 @@ async def analyze_branch(request: BranchRequest):
         print(f"Error: {e}")
         raise HTTPException(status_code=500, detail="Scraping failed")
 
-# --- Database Persistence Layer ---
-DB_FILE = "app_db.json"
+# --- Database Persistence Layer (Firebase) ---
+try:
+    if os.getenv("FIREBASE_CREDENTIALS"):
+        cred_dict = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
+        cred = credentials.Certificate(cred_dict)
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        print("Firebase successfully initialized!")
+    else:
+        print("WARNING: FIREBASE_CREDENTIALS not found. Falling back to local memory.")
+        db = None
+except Exception as e:
+    print(f"Firebase Init Error: {e}")
+    db = None
 
+# Fallbacks for missing DB
 branch_phones_db = {}
 complaints_db = []
-admins_db = [
-    {
-        "id": "1",
-        "name": "Ahmet Yılmaz",
-        "email": "ahmet@franceye.com",
-        "phone": "0532 123 45 67",
-        "receive_emails": True
-    }
-]
-
-def load_db():
-    global branch_phones_db, complaints_db, admins_db
-    if os.path.exists(DB_FILE):
-        try:
-            with open(DB_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                branch_phones_db = data.get("branch_phones", {})
-                complaints_db = data.get("complaints", [])
-                admins_db = data.get("admins", admins_db)
-        except Exception as e:
-            print("DB Load Error:", e)
-
-def save_db():
-    with open(DB_FILE, "w", encoding="utf-8") as f:
-        json.dump({
-            "branch_phones": branch_phones_db,
-            "complaints": complaints_db,
-            "admins": admins_db
-        }, f, ensure_ascii=False, indent=2)
-
-load_db()
+admins_db = []
 
 # --- Log Endpoints ---
 
 @app.post("/log_complaint")
 async def log_complaint(complaint: ComplaintLog):
-    complaints_db.insert(0, complaint.dict()) # Insert at the beginning for newest first
-    save_db()
+    if db:
+        doc_ref = db.collection("complaints").document()
+        # Add id and timestamp for ordering
+        comp_dict = complaint.dict()
+        comp_dict["created_at"] = firestore.SERVER_TIMESTAMP
+        comp_dict["id"] = doc_ref.id
+        doc_ref.set(comp_dict)
+    else:
+        complaints_db.insert(0, complaint.dict())
     return {"status": "success"}
 
 @app.get("/complaint_logs")
 async def get_complaint_logs():
+    if db:
+        docs = db.collection("complaints").order_by("created_at", direction=firestore.Query.DESCENDING).limit(100).stream()
+        return [doc.to_dict() for doc in docs]
     return complaints_db
 
 
@@ -384,21 +383,35 @@ class PhoneUpdateRequest(BaseModel):
 @app.post("/update_phone")
 async def update_phone(req: PhoneUpdateRequest):
     if req.place_id:
-        branch_phones_db[req.place_id] = {"phone": req.phone, "name": req.branch_name}
-        save_db()
+        if db:
+            db.collection("branch_phones").document(req.place_id).set({
+                "phone": req.phone,
+                "name": req.branch_name
+            })
+        else:
+            branch_phones_db[req.place_id] = {"phone": req.phone, "name": req.branch_name}
     return {"status": "success", "phone": req.phone}
 
 @app.get("/all_phones")
 async def get_all_phones():
     res = []
-    for pid, data in branch_phones_db.items():
-        res.append({"place_id": pid, "name": data.get("name", "Bilinmeyen Şube"), "phone": data.get("phone", "")})
+    if db:
+        docs = db.collection("branch_phones").stream()
+        for doc in docs:
+            data = doc.to_dict()
+            res.append({"place_id": doc.id, "name": data.get("name", "Bilinmeyen Şube"), "phone": data.get("phone", "")})
+    else:
+        for pid, data in branch_phones_db.items():
+            res.append({"place_id": pid, "name": data.get("name", "Bilinmeyen Şube"), "phone": data.get("phone", "")})
     return res
 
 
 
 @app.get("/admins")
 async def get_admins():
+    if db:
+        docs = db.collection("admins").stream()
+        return [doc.to_dict() for doc in docs]
     return admins_db
 
 class AdminProfileCreate(BaseModel):
@@ -416,27 +429,40 @@ async def add_admin(data: AdminProfileCreate):
         "phone": data.phone,
         "receive_emails": data.receive_emails
     }
-    admins_db.append(new_admin)
-    save_db()
+    if db:
+        db.collection("admins").document(new_admin["id"]).set(new_admin)
+    else:
+        admins_db.append(new_admin)
     return {"status": "success", "admin": new_admin}
 
 @app.delete("/admins/{admin_id}")
 async def delete_admin(admin_id: str):
-    global admins_db
-    admins_db = [a for a in admins_db if a["id"] != admin_id]
-    save_db()
+    if db:
+        db.collection("admins").document(admin_id).delete()
+    else:
+        global admins_db
+        admins_db = [a for a in admins_db if a["id"] != admin_id]
     return {"status": "success"}
 
 @app.put("/admins/{admin_id}")
 async def update_admin(admin_id: str, data: AdminProfileCreate):
-    for a in admins_db:
-        if a["id"] == admin_id:
-            a["name"] = data.name
-            a["email"] = data.email
-            a["phone"] = data.phone
-            a["receive_emails"] = data.receive_emails
-            save_db()
-            return {"status": "success", "admin": a}
+    updated_data = {
+        "name": data.name,
+        "email": data.email,
+        "phone": data.phone,
+        "receive_emails": data.receive_emails
+    }
+    if db:
+        doc_ref = db.collection("admins").document(admin_id)
+        if doc_ref.get().exists:
+            doc_ref.update(updated_data)
+            updated_data["id"] = admin_id
+            return {"status": "success", "admin": updated_data}
+    else:
+        for a in admins_db:
+            if a["id"] == admin_id:
+                a.update(updated_data)
+                return {"status": "success", "admin": a}
     return {"status": "error", "message": "Admin not found"}
 
 if __name__ == "__main__":
