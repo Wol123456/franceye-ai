@@ -20,6 +20,27 @@ load_dotenv()
 from google_api_client import fetch_google_data, search_places
 from datetime import datetime, timedelta
 
+# --- Database Persistence Layer (Firebase) ---
+try:
+    if os.getenv("FIREBASE_CREDENTIALS"):
+        cred_dict = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
+        cred = credentials.Certificate(cred_dict)
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(cred)
+        db = firestore.client()
+        print("Firebase successfully initialized!")
+    else:
+        print("WARNING: FIREBASE_CREDENTIALS not found. Falling back to local memory.")
+        db = None
+except Exception as e:
+    print(f"Firebase Init Error: {e}")
+    db = None
+
+# Fallbacks for missing DB
+branch_phones_db = {}
+complaints_db = []
+admins_db = []
+
 # --- App Setup ---
 app = FastAPI(title="FrancEye AI")
 
@@ -302,6 +323,21 @@ async def analyze_branch(request: BranchRequest):
                 print("="*40 + "\n")
         # ------------------------------------
         
+        manager_phone = ""
+        try:
+            if db and request.place_id:
+                phone_doc = db.collection("branch_phones").document(request.place_id).get()
+                if phone_doc.exists:
+                    manager_phone = phone_doc.to_dict().get("phone", "")
+        except Exception as db_e:
+            print("DB Read Error:", db_e)
+
+        if not manager_phone:
+            manager_phone = branch_phones_db.get(request.place_id, {}).get("phone", "")
+            
+        if not manager_phone:
+            manager_phone = g_data.get("formatted_phone_number", "")
+
         return {
             "branch_name": final_name,
             "place_id": request.place_id or "",
@@ -324,32 +360,12 @@ async def analyze_branch(request: BranchRequest):
             "website": g_data.get("website", ""),
             "score_history": score_history,
             "critical_alerts": critical_alerts,
-            "manager_phone": branch_phones_db.get(request.place_id, {}).get("phone", g_data.get("formatted_phone_number", ""))
+            "manager_phone": manager_phone
         }
     except Exception as e:
         print(f"Error: {e}")
         raise HTTPException(status_code=500, detail="Scraping failed")
 
-# --- Database Persistence Layer (Firebase) ---
-try:
-    if os.getenv("FIREBASE_CREDENTIALS"):
-        cred_dict = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
-        cred = credentials.Certificate(cred_dict)
-        if not firebase_admin._apps:
-            firebase_admin.initialize_app(cred)
-        db = firestore.client()
-        print("Firebase successfully initialized!")
-    else:
-        print("WARNING: FIREBASE_CREDENTIALS not found. Falling back to local memory.")
-        db = None
-except Exception as e:
-    print(f"Firebase Init Error: {e}")
-    db = None
-
-# Fallbacks for missing DB
-branch_phones_db = {}
-complaints_db = []
-admins_db = []
 
 # --- Log Endpoints ---
 
