@@ -2,8 +2,9 @@ import urllib.request
 import urllib.parse
 import json
 
-API_KEY = "AIzaSyD7WnKI4xrGDLV83_CBhdM5mkIWPeM_3qI"
+import os
 
+API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyD7WnKI4xrGDLV83_CBhdM5mkIWPeM_3qI")
 def normalize_turkish(text: str) -> str:
     if not text:
         return ""
