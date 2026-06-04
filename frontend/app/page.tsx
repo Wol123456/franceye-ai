@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Sidebar from '../components/Sidebar';
+import DirectoryModule from '../components/DirectoryModule';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 // --- Constants ---
@@ -54,6 +56,7 @@ export default function Dashboard() {
     const [managerPhone, setManagerPhone] = useState<string>('');
 
     // Settings Modal State
+    const [activeModule, setActiveModule] = useState('dashboard');
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [activeSettingsTab, setActiveSettingsTab] = useState<'current' | 'all' | 'admin'>('current');
     const [allPhones, setAllPhones] = useState<any[]>([]);
@@ -64,6 +67,13 @@ export default function Dashboard() {
 
     // Reviews Modal State
     const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
+
+    const fetchAdmins = async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/admins`);
+            if (res.ok) setAdmins(await res.json());
+        } catch (e) { console.error(e); }
+    };
 
     const fetchAllPhones = async () => {
         try {
@@ -358,7 +368,17 @@ export default function Dashboard() {
 
     return (
         <div className={isDarkMode ? 'dark' : ''}>
-            <div className="min-h-screen bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
+            <div className="flex h-screen bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-hidden">
+                <Sidebar 
+                    activeModule={activeModule}
+                    setActiveModule={setActiveModule}
+                    isDarkMode={isDarkMode}
+                    setIsDarkMode={setIsDarkMode}
+                    setView={setView}
+                    onDirectoryClick={() => { setActiveModule('directory'); fetchAllPhones(); fetchAdmins(); }}
+                />
+                <main className="flex-1 overflow-y-auto relative w-full">
+                    <div style={{ display: activeModule === 'dashboard' ? 'block' : 'none' }}>
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[100px]" />
@@ -948,257 +968,41 @@ export default function Dashboard() {
                 )}
             </div>
 
-            {/* --- SETTINGS MODAL --- */}
-            {isSettingsOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
-                        <div className="flex justify-between items-center p-5 border-b border-slate-800">
-                            <h2 className="text-xl font-bold">Ayarlar & Şube Rehberi</h2>
-                            <button onClick={() => setIsSettingsOpen(false)} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white transition">✕</button>
+                                </div> {/* End Dashboard */}
+
+                    {activeModule === 'directory' && (
+                        <DirectoryModule 
+                            data={data}
+                            allPhones={allPhones}
+                            admins={admins}
+                            activeSettingsTab={activeSettingsTab}
+                            setActiveSettingsTab={setActiveSettingsTab}
+                            newAdmin={newAdmin}
+                            setNewAdmin={setNewAdmin}
+                            isAdminFormOpen={isAdminFormOpen}
+                            setIsAdminFormOpen={setIsAdminFormOpen}
+                            editingAdminId={editingAdminId}
+                            setEditingAdminId={setEditingAdminId}
+                            fetchAllPhones={fetchAllPhones}
+                            handleAddNewAdmin={handleAddNewAdmin}
+                            handleEditAdmin={(admin) => {
+                                setEditingAdminId(admin.id);
+                                setNewAdmin({ name: admin.name, email: admin.email, phone: admin.phone, receive_emails: admin.receive_emails });
+                                setIsAdminFormOpen(true);
+                            }}
+                            handleDeleteAdmin={deleteAdmin}
+                        />
+                    )}
+
+                    {activeModule === 'settings' && (
+                        <div className="animate-fade-in space-y-6 max-w-7xl mx-auto p-6 md:p-10">
+                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full p-8 shadow-xl">
+                                <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">Sistem Ayarları</h2>
+                                <p className="text-slate-600 dark:text-slate-400">Bu alan ilerleyen güncellemelerde bildirim tercihleri ve genel platform ayarları için kullanılacaktır.</p>
+                            </div>
                         </div>
-                        
-                        <div className="flex border-b border-slate-800 bg-slate-100/50 dark:bg-slate-900/50">
-                            <button 
-                                onClick={() => setActiveSettingsTab('current')} 
-                                className={`flex-1 py-3 text-sm font-semibold transition ${activeSettingsTab === 'current' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
-                            >
-                                Mevcut Şube ({data?.branch_name || 'Yok'})
-                            </button>
-                            <button 
-                                onClick={() => setActiveSettingsTab('all')} 
-                                className={`flex-1 py-3 text-sm font-semibold transition ${activeSettingsTab === 'all' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
-                            >
-                                Tüm Rehber
-                            </button>
-                            <button 
-                                onClick={() => setActiveSettingsTab('admin')} 
-                                className={`flex-1 py-3 text-sm font-semibold transition ${activeSettingsTab === 'admin' ? 'text-emerald-400 border-b-2 border-emerald-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
-                            >
-                                Yönetici Profili
-                            </button>
-                        </div>
-
-                        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
-                            {activeSettingsTab === 'admin' && (
-                                <div className="space-y-6 animate-fade-in">
-                                    <div className="space-y-3">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <h3 className="text-slate-900 dark:text-white font-bold text-lg">Kayıtlı Yöneticiler</h3>
-                                            {!isAdminFormOpen && (
-                                                <button onClick={handleAddNewAdmin} className="text-xs bg-emerald-600 hover:bg-emerald-500 text-slate-900 dark:text-white font-bold px-3 py-1.5 rounded transition shadow-lg shadow-emerald-500/20">
-                                                    + Yeni Ekle
-                                                </button>
-                                            )}
-                                        </div>
-                                        {admins.length === 0 ? (
-                                            <div className="text-slate-500 text-sm py-4 text-center bg-white dark:bg-slate-800/30 rounded-xl border border-slate-300/50 dark:border-slate-700/50">Kayıtlı yönetici bulunmuyor.</div>
-                                        ) : (
-                                            admins.map(admin => (
-                                                <div key={admin.id} className={`bg-white/80 dark:bg-slate-800/50 p-4 rounded-xl border flex justify-between items-center group transition hover:border-slate-500 ${editingAdminId === admin.id ? 'border-emerald-500/50' : 'border-slate-300 dark:border-slate-700'}`}>
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center font-bold border border-emerald-500/30">
-                                                            {admin.name.charAt(0).toUpperCase()}
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-bold text-slate-900 dark:text-white text-sm">{admin.name}</div>
-                                                            <div className="text-xs text-slate-600 dark:text-slate-400 flex gap-2 mt-0.5 items-center">
-                                                                <span>{admin.phone}</span>
-                                                                {admin.email && <span>• {admin.email}</span>}
-                                                                {admin.receive_emails && <span className="text-[10px] bg-blue-500/20 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30">✉️ E-Posta Alır</span>}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
-                                                        <button 
-                                                            onClick={() => {
-                                                                setEditingAdminId(admin.id);
-                                                                setNewAdmin({ name: admin.name, email: admin.email, phone: admin.phone, receive_emails: admin.receive_emails });
-                                                                setIsAdminFormOpen(true);
-                                                            }} 
-                                                            className="text-blue-600 dark:text-blue-400 hover:text-slate-900 dark:text-white hover:bg-blue-500 p-2 bg-blue-500/10 rounded-lg transition"
-                                                            title="Düzenle"
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => deleteAdmin(admin.id)} 
-                                                            className="text-red-400 hover:text-slate-900 dark:text-white hover:bg-red-500 p-2 bg-red-500/10 rounded-lg transition"
-                                                            title="Sil"
-                                                        >
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        )}
-                                    </div>
-
-                                    {isAdminFormOpen && (
-                                        <div className="bg-white dark:bg-slate-800/30 p-5 rounded-xl border border-emerald-500/30 space-y-4 relative animate-fade-in">
-                                            <button 
-                                                onClick={() => {
-                                                    setIsAdminFormOpen(false);
-                                                    setEditingAdminId(null);
-                                                }}
-                                                className="absolute top-3 right-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white transition"
-                                            >✕</button>
-                                            
-                                            <h3 className="text-slate-900 dark:text-white font-bold text-sm flex items-center gap-2">
-                                                {editingAdminId ? '✏️ Yöneticiyi Düzenle' : '➕ Yeni Yönetici Ekle'}
-                                            </h3>
-                                            
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div className="space-y-1">
-                                                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">İsim Soyisim</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={newAdmin.name}
-                                                        onChange={e => setNewAdmin({...newAdmin, name: e.target.value})}
-                                                        className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white text-sm outline-none focus:border-emerald-500 transition" 
-                                                        placeholder="Örn: Ali Yılmaz"
-                                                    />
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Cep Telefonu</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={newAdmin.phone}
-                                                        onChange={e => setNewAdmin({...newAdmin, phone: e.target.value})}
-                                                        className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white text-sm outline-none focus:border-emerald-500 transition" 
-                                                        placeholder="Örn: 0532 123 45 67"
-                                                    />
-                                                </div>
-                                                <div className="space-y-1 md:col-span-2">
-                                                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">E-Posta Adresi (Opsiyonel)</label>
-                                                    <input 
-                                                        type="email" 
-                                                        value={newAdmin.email}
-                                                        onChange={e => setNewAdmin({...newAdmin, email: e.target.value})}
-                                                        className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2.5 text-slate-900 dark:text-white text-sm outline-none focus:border-emerald-500 transition" 
-                                                        placeholder="Örn: ali@sirket.com"
-                                                    />
-                                                </div>
-                                                
-                                                <div className="space-y-1 md:col-span-2 mt-2">
-                                                    <label className="flex items-center gap-3 cursor-pointer p-3 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:border-emerald-500/50 rounded-lg transition">
-                                                        <input 
-                                                            type="checkbox" 
-                                                            checked={newAdmin.receive_emails}
-                                                            onChange={e => setNewAdmin({...newAdmin, receive_emails: e.target.checked})}
-                                                            className="w-5 h-5 accent-emerald-500 rounded cursor-pointer"
-                                                        />
-                                                        <div className="flex flex-col">
-                                                            <span className="text-sm font-semibold text-slate-900 dark:text-white">Yorumları E-Posta Olarak Al</span>
-                                                            <span className="text-xs text-slate-600 dark:text-slate-400">Yeni bir yorum geldiğinde anında bildirim e-postası gönderilsin.</span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex gap-3 pt-2">
-                                                <button 
-                                                    onClick={() => {
-                                                        setIsAdminFormOpen(false);
-                                                        setEditingAdminId(null);
-                                                    }}
-                                                    className="flex-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-600 text-slate-900 dark:text-white font-bold py-3 rounded-lg transition text-sm"
-                                                >
-                                                    İptal
-                                                </button>
-                                                <button 
-                                                    onClick={saveAdmin}
-                                                    className="flex-[2] bg-emerald-600 hover:bg-emerald-500 text-slate-900 dark:text-white font-bold py-3 rounded-lg transition shadow-lg shadow-emerald-500/20 text-sm"
-                                                >
-                                                    {editingAdminId ? 'Değişiklikleri Kaydet' : 'Sisteme Kaydet'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            {activeSettingsTab === 'current' && data && (
-                                <div className="space-y-4 animate-fade-in">
-                                    <div className="bg-white/80 dark:bg-slate-800/50 p-5 rounded-xl border border-slate-300 dark:border-slate-700">
-                                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Müdür Telefon Numarası</label>
-                                        <div className="flex flex-col sm:flex-row gap-3">
-                                            <input 
-                                                type="text" 
-                                                value={managerPhone} 
-                                                onChange={(e) => setManagerPhone(e.target.value)} 
-                                                placeholder="Örn: 0555 123 45 67" 
-                                                className="flex-1 bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white outline-none focus:border-blue-500 transition"
-                                            />
-                                            <button 
-                                                onClick={async () => {
-                                                    try {
-                                                        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/update_phone`, {
-                                                            method: 'POST',
-                                                            headers: {'Content-Type': 'application/json'},
-                                                            body: JSON.stringify({ place_id: data.place_id, phone: managerPhone, branch_name: data.branch_name })
-                                                        });
-                                                        if (res.ok) {
-                                                            alert("Numara başarıyla kaydedildi!");
-                                                            fetchAllPhones();
-                                                        }
-                                                    } catch (e) {
-                                                        console.error(e);
-                                                    }
-                                                }}
-                                                className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-lg text-slate-900 dark:text-white font-medium transition"
-                                            >
-                                                Kaydet
-                                            </button>
-                                        </div>
-                                        <p className="text-xs text-slate-500 mt-3">Bu numara, WhatsApp raporları gönderilirken otomatik olarak yönlendirme için kullanılacaktır.</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeSettingsTab === 'all' && (
-                                <div className="space-y-3 animate-fade-in">
-                                    {allPhones.length === 0 ? (
-                                        <div className="text-center py-10 text-slate-500">Henüz kaydedilmiş bir şube numarası bulunmuyor.</div>
-                                    ) : (
-                                        allPhones.map((p, i) => (
-                                            <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white dark:bg-slate-800/30 border border-slate-300 dark:border-slate-700 rounded-xl gap-3 hover:bg-white/80 dark:bg-slate-800/50 transition">
-                                                <div className="font-medium text-slate-800 dark:text-slate-200">{p.name}</div>
-                                                <div className="flex gap-2 w-full sm:w-auto">
-                                                    <input 
-                                                        type="text"
-                                                        defaultValue={p.phone}
-                                                        onChange={(e) => p.newPhone = e.target.value}
-                                                        className="w-full sm:w-40 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md px-3 py-1.5 text-sm outline-none focus:border-blue-500 text-slate-700 dark:text-slate-300"
-                                                    />
-                                                    <button 
-                                                        onClick={async () => {
-                                                            const phoneToSave = p.newPhone !== undefined ? p.newPhone : p.phone;
-                                                            try {
-                                                                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/update_phone`, {
-                                                                    method: 'POST',
-                                                                    headers: {'Content-Type': 'application/json'},
-                                                                    body: JSON.stringify({ place_id: p.place_id, phone: phoneToSave, branch_name: p.name })
-                                                                });
-                                                                if (res.ok) {
-                                                                    alert("Güncellendi!");
-                                                                    fetchAllPhones();
-                                                                }
-                                                            } catch (e) { console.error(e); }
-                                                        }}
-                                                        className="bg-slate-200 dark:bg-slate-700 hover:bg-slate-600 border border-slate-600 px-3 py-1.5 rounded-md text-sm transition text-slate-900 dark:text-white"
-                                                    >
-                                                        Güncelle
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
-
+                    )}
+            
             {/* --- REVIEWS MODAL (Son Mesajları Oku) --- */}
             {isReviewsModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
@@ -1252,6 +1056,7 @@ export default function Dashboard() {
                     </div>
                 </div>
             )}
+                </main>
         </div>
         </div>
     );
