@@ -14,7 +14,7 @@ def normalize_turkish(text: str) -> str:
     text = text.replace(" ", "").replace("-", "").replace("'", "")
     return text
 
-def search_places(query: str, city: str = None):
+def search_places(query: str, city: str = None, lat: float = None, lng: float = None):
     """
     Search for places by text query and return a list of simplified place objects.
     """
@@ -22,6 +22,9 @@ def search_places(query: str, city: str = None):
     
     def _do_search(q: str):
         params = {"query": q, "key": API_KEY, "language": "tr"}
+        if lat is not None and lng is not None:
+            params["location"] = f"{lat},{lng}"
+            params["radius"] = "5000"
         url = f"{base_url}?{urllib.parse.urlencode(params)}"
         try:
             with urllib.request.urlopen(url, timeout=5) as response:
@@ -119,14 +122,14 @@ def get_place_details(place_id: str):
         print(f"API Details Error: {e}")
         return None
 
-def fetch_google_data(query: str = None, place_id: str = None):
+def fetch_google_data(query: str = None, place_id: str = None, lat: float = None, lng: float = None):
     # 1. Determine Place ID
     target_id = place_id
     
     if not target_id and query:
         # Backward compatibility or fallback: Search for single best match
         # Reuse search_places logic but just take first ID
-        candidates = search_places(query)
+        candidates = search_places(query, lat=lat, lng=lng)
         if candidates:
             target_id = candidates[0]["place_id"]
             

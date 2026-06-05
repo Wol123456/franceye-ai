@@ -1,21 +1,12 @@
 import urllib.request
 import urllib.parse
 import json
+import os
 
-API_KEY = "AIzaSyD7WnKI4xrGDLV83_CBhdM5mkIWPeM_3qI"
-
-def test(query):
-    base_url = "https://maps.googleapis.com/maps/api/place/textsearch/json"
-    params = {"query": query, "key": API_KEY, "language": "tr"}
-    url = f"{base_url}?{urllib.parse.urlencode(params)}"
-    with urllib.request.urlopen(url, timeout=5) as response:
-        data = json.loads(response.read().decode())
-        for r in data.get("results", []):
-            print(r["name"], "|||", r.get("formatted_address"))
-            print("ID:", r["place_id"])
-            print("---")
-
-print("Query 1: Espressolab şubeleri Konya")
-test("Espressolab şubeleri Konya")
-print("\nQuery 2: Espressolab Konya")
-test("Espressolab Konya")
+API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyD7WnKI4xrGDLV83_CBhdM5mkIWPeM_3qI")
+query = "Oses Çiğköfte 40.990, 29.025"
+url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query={urllib.parse.quote(query)}&key={API_KEY}"
+with urllib.request.urlopen(url) as res:
+    data = json.loads(res.read().decode())
+    for r in data.get("results", [])[:2]:
+        print(r["name"], r.get("formatted_address"))

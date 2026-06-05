@@ -17,7 +17,12 @@ export default function CompetitorModule({ data }: CompetitorModuleProps) {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ branch_name: competitorQuery, location_query: competitorQuery })
+                body: JSON.stringify({ 
+                    branch_name: competitorQuery, 
+                    location_query: competitorQuery,
+                    lat: data?.coords?.lat,
+                    lng: data?.coords?.lng
+                })
             });
             if (res.ok) {
                 const json = await res.json();

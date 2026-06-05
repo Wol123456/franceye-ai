@@ -61,6 +61,8 @@ class BranchRequest(BaseModel):
     location_query: str 
     place_id: str = None 
     target_date: str = None # ISO Format YYYY-MM-DD
+    lat: float = None
+    lng: float = None
 
 class ComplaintLog(BaseModel):
     branch_name: str
@@ -111,12 +113,12 @@ def generate_rating_distribution(score: float, total_reviews: int) -> Dict[str, 
         counts[4] += diff
     return {"5": counts[4], "4": counts[3], "3": counts[2], "2": counts[1], "1": counts[0]}
 
-async def scrape_google_maps(query: str, place_id: str = None, target_date_str: str = None):
+async def scrape_google_maps(query: str, place_id: str = None, target_date_str: str = None, lat: float = None, lng: float = None):
     # Use Official API for Base Data
     print(f"DEBUG: Using Google API for: {query} (ID: {place_id}) Date: {target_date_str}")
     print("--- BACKEND UPDATED V2: NIGHT TRAFFIC FIX APPLIED ---")
     
-    api_data = fetch_google_data(query=query, place_id=place_id)
+    api_data = fetch_google_data(query=query, place_id=place_id, lat=lat, lng=lng)
     
     if api_data:
         # --- Historical Simulation Engine ---
@@ -275,7 +277,7 @@ async def search_branches(request: SearchRequest):
 @app.post("/analyze", response_model=AnalysisResult)
 async def analyze_branch(request: BranchRequest):
     try:
-        g_data = await scrape_google_maps(request.location_query, request.place_id, request.target_date)
+        g_data = await scrape_google_maps(request.location_query, request.place_id, request.target_date, request.lat, request.lng)
         # t_data = scrape_trendyol(request.location_query) # REMOVED: Focus on Real Google Data
         
         final_name = g_data.get("name") or request.branch_name
