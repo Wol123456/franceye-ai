@@ -390,15 +390,11 @@ export default function Dashboard() {
                     />
                 </div>
                 <main className="flex-1 overflow-y-auto relative w-full">
-                    <div style={{ display: activeModule === 'dashboard' ? 'block' : 'none' }}>
-            <div className="fixed inset-0 pointer-events-none">
+            <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[100px]" />
             </div>
-
-
-            <div className="relative max-w-7xl mx-auto p-6 md:p-10 space-y-10">
-
+            <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 pt-6 md:pt-10">
                 {/* Header */}
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-slate-300 dark:border-white/10 pb-8">
                     <div className="flex flex-row items-center justify-between w-full md:w-auto">
@@ -495,6 +491,16 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </header>
+            </div>
+            <div className="relative z-10">
+
+                    <div style={{ display: activeModule === 'dashboard' ? 'block' : 'none' }}>
+
+
+
+            <div className="relative max-w-7xl mx-auto p-6 md:p-10 pt-6 space-y-10">
+
+
 
                 {/* --- SEARCH BAR (Always Visible) --- */}
                 <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl p-1 border border-slate-300 dark:border-white/10 shadow-2xl z-20 relative">
@@ -1078,7 +1084,8 @@ export default function Dashboard() {
                     </div>
                 </div>
             )}
-                </main>
+                            </div>
+</main>
         </div>
         </div>
     );
