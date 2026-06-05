@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import DirectoryModule from '../components/DirectoryModule';
+import CompetitorModule from '../components/CompetitorModule';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 // --- Constants ---
@@ -58,6 +59,13 @@ export default function Dashboard() {
     // Settings Modal State
     const [activeModule, setActiveModule] = useState('dashboard');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [aiResponseModal, setAiResponseModal] = useState<any>(null);
+
+    const generateAiResponse = (review: any) => {
+        if (review.rating >= 4) return `Merhaba ${review.author_name},\n\nHarika yorumunuz ve güzel puanınız için çok teşekkür ederiz! Sizlere en iyi hizmeti sunmak için çalışıyoruz. Sizi en kısa sürede tekrar şubemizde ağırlamaktan mutluluk duyarız.\n\nSaygılarımızla,\nŞube Yönetimi`;
+        else if (review.rating === 3) return `Merhaba ${review.author_name},\n\nYorumunuz ve geri bildiriminiz için teşekkür ederiz. Deneyiminizi daha iyi hale getirmek için paylaştığınız detayları dikkate alacağız. Bir sonraki ziyaretinizde 5 yıldızlık bir deneyim sunmak dileğiyle.\n\nSaygılarımızla,\nŞube Yönetimi`;
+        else return `Merhaba ${review.author_name},\n\nYaşadığınız olumsuz deneyim için çok üzgünüz. Konuyu detaylı olarak araştırmak ve telafi etmek isteriz. Lütfen müşteri ilişkileri hattımızla iletişime geçebilir misiniz? Size yardımcı olmak için elimizden geleni yapacağız.\n\nSaygılarımızla,\nŞube Yönetimi`;
+    };
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [activeSettingsTab, setActiveSettingsTab] = useState<'current' | 'all' | 'admin'>('current');
     const [allPhones, setAllPhones] = useState<any[]>([]);
@@ -620,6 +628,9 @@ export default function Dashboard() {
                                 return (
                                 <div key={branch.place_id} className="bg-white/80 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 hover:border-blue-500/50 p-6 rounded-2xl transition hover:bg-slate-50/60 dark:bg-slate-800/60 group cursor-pointer relative" onClick={() => analyzeBranch(branch)}>
                                     
+                                    {/* Leaderboard Badge */}
+                                    <div className="absolute top-0 left-0 bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold px-3 py-1 rounded-tl-2xl rounded-br-2xl shadow-md z-10 text-sm">#{filteredBranches.indexOf(branch) + 1}</div>
+
                                     {/* Bildirim Balonları */}
                                     {(unread.positive > 0 || unread.negative > 0) && (
                                         <div className="absolute -top-3 -right-3 flex gap-1.5 z-10">
@@ -644,9 +655,14 @@ export default function Dashboard() {
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                                             <span className="font-bold">{branch.rating}</span>
                                         </div>
-                                        <div className="text-slate-500">
-                                            ({branch.user_ratings_total} Review)
+                                        <div className="text-slate-500 border-r border-slate-300 dark:border-slate-700 pr-4">
+                                            ({branch.user_ratings_total} Yorum)
                                         </div>
+                                        {branch.health_score && (
+                                            <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                                                <span className="font-bold">Skor: {branch.health_score}</span>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <button className="mt-4 w-full py-2 bg-slate-200 dark:bg-slate-700 hover:bg-emerald-600 rounded-lg text-sm font-semibold transition text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:text-white">
@@ -853,9 +869,13 @@ export default function Dashboard() {
                                                             <span key={ci} className="ml-2 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">{cat}</span>
                                                         ))}
                                                     </div>
-                                                    <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                                                    <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic mb-3">
                                                         "{review.text && review.text.length > 100 ? review.text.substring(0, 100) + '...' : review.text}"
                                                     </p>
+                                                    <button onClick={() => setAiResponseModal({isOpen: true, review, responseText: generateAiResponse(review)})} className="text-[10px] bg-purple-600/10 text-purple-600 hover:bg-purple-600/20 dark:text-purple-400 font-bold px-2 py-1 rounded-md transition flex items-center gap-1 border border-purple-500/20 w-fit">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                                        AI ile Yanıtla
+                                                    </button>
                                                 </div>
                                             ))
                                         ) : (
@@ -988,6 +1008,49 @@ export default function Dashboard() {
                             </div>
 
                         </div>
+                        
+                        {/* Word Cloud & Action Plan Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            {/* Word Cloud */}
+                            <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 dark:border-white/5 shadow-xl">
+                                <h3 className="text-slate-800 dark:text-white font-bold mb-4 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    Müşteri Trendleri (Kelime Bulutu)
+                                </h3>
+                                <div className="flex flex-wrap gap-3">
+                                    {data.trend_keywords && data.trend_keywords.length > 0 ? (
+                                        data.trend_keywords.map((kw: any, i: number) => (
+                                            <span key={i} className={`text-sm font-bold px-3 py-1.5 rounded-lg border ${kw.sentiment === 'positive' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`} style={{ fontSize: `${Math.max(0.75, 0.75 + (kw.count * 0.05))}rem` }}>
+                                                {kw.word} ({kw.count})
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <p className="text-slate-500 text-sm">Yeterli trend verisi bulunamadı.</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Action Plan */}
+                            <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-200 dark:border-white/5 shadow-xl">
+                                <h3 className="text-slate-800 dark:text-white font-bold mb-4 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-500"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                                    Yapay Zeka Aksiyon Planı
+                                </h3>
+                                <ul className="space-y-3">
+                                    {data.action_plan && data.action_plan.length > 0 ? (
+                                        data.action_plan.map((plan: any, i: number) => (
+                                            <li key={i} className="flex gap-3 items-start">
+                                                <input type="checkbox" className="mt-1 w-4 h-4 accent-purple-600 rounded cursor-pointer" />
+                                                <span className="text-sm text-slate-700 dark:text-slate-300 font-medium leading-tight">{plan.task}</span>
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <p className="text-slate-500 text-sm">Bekleyen aksiyon bulunmuyor.</p>
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
+
                         </div>
                     </div>
                 )}
@@ -1018,6 +1081,10 @@ export default function Dashboard() {
                             }}
                             handleDeleteAdmin={deleteAdmin}
                         />
+                    )}
+
+                    {activeModule === 'competitor' && (
+                        <CompetitorModule data={data} />
                     )}
 
                     {activeModule === 'settings' && (

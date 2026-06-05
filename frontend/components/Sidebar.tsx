@@ -21,6 +21,9 @@ export default function Sidebar({ activeModule, setActiveModule, isDarkMode, set
                 <button onClick={() => { setActiveModule('dashboard'); setView('search'); }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'dashboard' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
                     📊 Şube Sağlığı
                 </button>
+                <button onClick={() => setActiveModule('competitor')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'competitor' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
+                    ⚔️ Rakip Analizi
+                </button>
                 <button onClick={onDirectoryClick} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'directory' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
                     📒 Rehber & Yönetici
                 </button>
