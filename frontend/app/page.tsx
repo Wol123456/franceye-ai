@@ -57,6 +57,7 @@ export default function Dashboard() {
 
     // Settings Modal State
     const [activeModule, setActiveModule] = useState('dashboard');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [activeSettingsTab, setActiveSettingsTab] = useState<'current' | 'all' | 'admin'>('current');
     const [allPhones, setAllPhones] = useState<any[]>([]);
@@ -368,15 +369,26 @@ export default function Dashboard() {
 
     return (
         <div className={isDarkMode ? 'dark' : ''}>
-            <div className="flex h-screen bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-hidden">
-                <Sidebar 
-                    activeModule={activeModule}
-                    setActiveModule={setActiveModule}
-                    isDarkMode={isDarkMode}
-                    setIsDarkMode={setIsDarkMode}
-                    setView={setView}
-                    onDirectoryClick={() => { setActiveModule('directory'); fetchAllPhones(); fetchAdmins(); }}
-                />
+            <div className="flex h-screen bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-hidden relative">
+                
+                {/* Mobile Sidebar Overlay */}
+                {isSidebarOpen && (
+                    <div 
+                        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden" 
+                        onClick={() => setIsSidebarOpen(false)}
+                    ></div>
+                )}
+                
+                <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition-transform duration-300 z-50 md:z-0 flex-shrink-0 h-full`}>
+                    <Sidebar 
+                        activeModule={activeModule}
+                        setActiveModule={(m) => { setActiveModule(m); setIsSidebarOpen(false); }}
+                        isDarkMode={isDarkMode}
+                        setIsDarkMode={setIsDarkMode}
+                        setView={(v) => { setView(v); setIsSidebarOpen(false); }}
+                        onDirectoryClick={() => { setActiveModule('directory'); fetchAllPhones(); fetchAdmins(); setIsSidebarOpen(false); }}
+                    />
+                </div>
                 <main className="flex-1 overflow-y-auto relative w-full">
                     <div style={{ display: activeModule === 'dashboard' ? 'block' : 'none' }}>
             <div className="fixed inset-0 pointer-events-none">
@@ -388,25 +400,35 @@ export default function Dashboard() {
             <div className="relative max-w-7xl mx-auto p-6 md:p-10 space-y-10">
 
                 {/* Header */}
-                <header className="flex flex-col md:flex-row justify-between items-end border-b border-slate-300 dark:border-white/10 pb-8">
-                    <div className="cursor-pointer flex items-center gap-4" onClick={() => setView('search')}>
-                        <img 
-                            src="/logo.png" 
-                            alt="FrancEye AI Logo" 
-                            className="h-16 w-auto bg-white p-1 rounded-xl object-contain drop-shadow-md" 
-                        />
-                        <div>
-                            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent tracking-tight">
-                                FrancEye AI
-                            </h1>
-                            <p className="text-slate-600 dark:text-slate-400 mt-2 text-lg font-light">
-                                Yapay Zeka Destekli Şube Sağlık ve İtibar Takibi
-                            </p>
+                <header className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-slate-300 dark:border-white/10 pb-8">
+                    <div className="flex flex-row items-center justify-between w-full md:w-auto">
+                        <div className="cursor-pointer flex items-center gap-4" onClick={() => setView('search')}>
+                            <img 
+                                src="/logo.png" 
+                                alt="FrancEye AI Logo" 
+                                className="h-12 md:h-16 w-auto bg-white p-1 rounded-xl object-contain drop-shadow-md" 
+                            />
+                            <div>
+                                <h1 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent tracking-tight">
+                                    FrancEye AI
+                                </h1>
+                                <p className="text-slate-600 dark:text-slate-400 mt-1 md:mt-2 text-xs md:text-lg font-light hidden md:block">
+                                    Yapay Zeka Destekli Şube Sağlık ve İtibar Takibi
+                                </p>
+                            </div>
                         </div>
+
+                        {/* Hamburger Menu for Mobile */}
+                        <button 
+                            className="md:hidden p-2 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition"
+                            onClick={() => setIsSidebarOpen(true)}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                        </button>
                     </div>
 
                     {/* Sağ Üst Menü (Tema, Ana Sayfa, Ayarlar & Bildirimler) */}
-                    <div className="mt-4 md:mt-0 flex flex-wrap items-center justify-end gap-3 z-30 relative">
+                    <div className="mt-4 md:mt-0 flex flex-wrap items-center justify-start md:justify-end gap-2 md:gap-3 z-30 relative w-full md:w-auto">
                         <button onClick={() => setIsDarkMode(!isDarkMode)} className="flex items-center gap-2 bg-slate-200/80 dark:bg-slate-800/50 hover:bg-slate-300 dark:hover:bg-slate-700 px-4 py-2 rounded-xl text-lg transition border border-slate-300 dark:border-white/10 shadow-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
                             {isDarkMode ? '☀️' : '🌙'}
                         </button>
