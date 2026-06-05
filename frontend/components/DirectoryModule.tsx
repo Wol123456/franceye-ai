@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface DirectoryModuleProps {
+    branches?: any[];
     data: any;
     allPhones: any[];
     admins: any[];
-    activeSettingsTab: 'current' | 'all' | 'admin';
-    setActiveSettingsTab: (tab: 'current' | 'all' | 'admin') => void;
+    activeSettingsTab: string;
+    setActiveSettingsTab: (tab: any) => void;
     newAdmin: any;
     setNewAdmin: (admin: any) => void;
     isAdminFormOpen: boolean;
@@ -19,11 +20,19 @@ interface DirectoryModuleProps {
 }
 
 export default function DirectoryModule({
-    data, allPhones, admins, activeSettingsTab, setActiveSettingsTab,
+    branches, data, allPhones, admins, activeSettingsTab, setActiveSettingsTab,
     newAdmin, setNewAdmin, isAdminFormOpen, setIsAdminFormOpen,
     editingAdminId, setEditingAdminId, fetchAllPhones, handleAddNewAdmin,
     handleEditAdmin, handleDeleteAdmin
 }: DirectoryModuleProps) {
+    
+    const currentTab = activeSettingsTab === 'admin' ? 'admin' : 'brand';
+    const [editedPhones, setEditedPhones] = useState<{[key: string]: string}>({});
+
+    const handlePhoneChange = (place_id: string, value: string) => {
+        setEditedPhones(prev => ({...prev, [place_id]: value}));
+    };
+
     return (
         <div className="animate-fade-in space-y-6 max-w-7xl mx-auto p-6 md:p-10">
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full overflow-hidden shadow-xl flex flex-col min-h-[600px]">
@@ -34,26 +43,20 @@ export default function DirectoryModule({
                 <div className="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
                     <button 
                         onClick={() => setActiveSettingsTab('current')} 
-                        className={`flex-1 py-4 text-sm font-semibold transition ${activeSettingsTab === 'current' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
+                        className={`flex-1 py-4 text-sm font-semibold transition ${currentTab === 'brand' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
                     >
-                        Mevcut Şube ({data?.branch_name || 'Yok'})
-                    </button>
-                    <button 
-                        onClick={() => setActiveSettingsTab('all')} 
-                        className={`flex-1 py-4 text-sm font-semibold transition ${activeSettingsTab === 'all' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
-                    >
-                        Tüm Şubeler
+                        Marka Şubeleri ({branches ? branches.length : 0})
                     </button>
                     <button 
                         onClick={() => setActiveSettingsTab('admin')} 
-                        className={`flex-1 py-4 text-sm font-semibold transition ${activeSettingsTab === 'admin' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
+                        className={`flex-1 py-4 text-sm font-semibold transition ${currentTab === 'admin' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-400 bg-white/80 dark:bg-slate-800/50' : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'}`}
                     >
                         Sistem Yöneticileri
                     </button>
                 </div>
 
                 <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50 dark:bg-[#0f172a]/50">
-                    {activeSettingsTab === 'admin' && (
+                    {currentTab === 'admin' && (
                         <div className="space-y-6">
                             <div className="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
                                 <div>
@@ -126,93 +129,79 @@ export default function DirectoryModule({
                         </div>
                     )}
 
-                    {activeSettingsTab === 'current' && (
-                        <div className="space-y-4 max-w-lg mx-auto mt-8">
-                            <div className="text-center mb-6">
-                                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-200 dark:border-blue-800/50">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                                </div>
-                                <h3 className="text-lg font-bold text-slate-800 dark:text-white">{data?.branch_name || 'Şube Seçilmedi'}</h3>
-                                <p className="text-sm text-slate-500 dark:text-slate-400">Şube Yöneticisi Telefon Numarası</p>
-                            </div>
-                            
-                            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm relative">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Telefon Numarası</label>
-                                <div className="flex gap-3">
-                                    <input 
-                                        type="text" 
-                                        className="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition text-slate-800 dark:text-white font-medium"
-                                        placeholder="05..."
-                                        value={allPhones.find(p => p.place_id === data?.place_id)?.phone || ''}
-                                        onChange={(e) => {
-                                            const newPhones = [...allPhones];
-                                            const idx = newPhones.findIndex(p => p.place_id === data?.place_id);
-                                            if (idx >= 0) newPhones[idx].phone = e.target.value;
-                                            else newPhones.push({ place_id: data?.place_id, phone: e.target.value, name: data?.branch_name });
-                                        }}
-                                    />
-                                    <button 
-                                        onClick={async () => {
-                                            if (!data?.place_id) return;
-                                            const phone = allPhones.find(p => p.place_id === data.place_id)?.phone;
-                                            try {
-                                                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/update_phone`, {
-                                                    method: 'POST',
-                                                    headers: {'Content-Type': 'application/json'},
-                                                    body: JSON.stringify({ place_id: data.place_id, phone, branch_name: data.branch_name })
-                                                });
-                                                if (res.ok) {
-                                                    alert("Kaydedildi!");
-                                                    fetchAllPhones();
-                                                }
-                                            } catch (e) { console.error(e); }
-                                        }}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:shadow-blue-500/30 transition flex items-center gap-2"
-                                    >
-                                        Kaydet
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {activeSettingsTab === 'all' && (
-                        <div className="space-y-3">
-                            {allPhones.length === 0 ? (
-                                <div className="text-center py-10 text-slate-500">Henüz kayıtlı şube telefonu bulunmuyor.</div>
-                            ) : (
-                                allPhones.map((p: any, i: number) => (
-                                    <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:shadow-md transition gap-4">
-                                        <div className="font-bold text-slate-800 dark:text-slate-200">{p.name}</div>
-                                        <div className="flex gap-3 w-full sm:w-auto">
-                                            <input 
-                                                type="text"
-                                                defaultValue={p.phone}
-                                                onChange={(e) => p.newPhone = e.target.value}
-                                                className="w-full sm:w-48 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 outline-none focus:border-blue-500 text-slate-800 dark:text-slate-200 font-medium"
-                                            />
-                                            <button 
-                                                onClick={async () => {
-                                                    const phoneToSave = p.newPhone !== undefined ? p.newPhone : p.phone;
-                                                    try {
-                                                        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/update_phone`, {
-                                                            method: 'POST',
-                                                            headers: {'Content-Type': 'application/json'},
-                                                            body: JSON.stringify({ place_id: p.place_id, phone: phoneToSave, branch_name: p.name })
-                                                        });
-                                                        if (res.ok) {
-                                                            alert("Güncellendi!");
-                                                            fetchAllPhones();
-                                                        }
-                                                    } catch (e) { console.error(e); }
-                                                }}
-                                                className="bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white px-5 py-2 rounded-lg text-sm font-bold transition"
-                                            >
-                                                Güncelle
-                                            </button>
-                                        </div>
+                    {currentTab === 'brand' && (
+                        <div className="space-y-4">
+                            {(!branches || branches.length === 0) ? (
+                                <div className="text-center py-12 px-4">
+                                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                                     </div>
-                                ))
+                                    <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">Lütfen Bir Marka Arayın</h3>
+                                    <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto">Rehberde şube telefonlarını listelemek ve kaydetmek için önce arama bölümünden bir marka listelemesi yapın. (Örn: Oses Çiğköfte)</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {branches.map((branch: any, i: number) => {
+                                        const existingPhoneObj = allPhones.find(p => p.place_id === branch.place_id);
+                                        const existingPhone = existingPhoneObj ? existingPhoneObj.phone : '';
+                                        const displayPhone = editedPhones[branch.place_id] !== undefined ? editedPhones[branch.place_id] : existingPhone;
+                                        const hasUnsavedChanges = editedPhones[branch.place_id] !== undefined && editedPhones[branch.place_id] !== existingPhone;
+
+                                        return (
+                                            <div key={branch.place_id || i} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-blue-300 dark:hover:border-blue-700 shadow-sm transition gap-4">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="font-bold text-slate-800 dark:text-white text-lg">{branch.name}</div>
+                                                        {existingPhone && <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800/50">Kayıtlı</span>}
+                                                    </div>
+                                                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                                        {branch.vicinity || branch.formatted_address || "Adres bulunamadı"}
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                                    <input 
+                                                        type="text"
+                                                        value={displayPhone}
+                                                        onChange={(e) => handlePhoneChange(branch.place_id, e.target.value)}
+                                                        placeholder="05XX XXX XX XX"
+                                                        className={`w-full sm:w-56 bg-slate-50 dark:bg-slate-900 border ${hasUnsavedChanges ? 'border-amber-400 dark:border-amber-600/50' : 'border-slate-200 dark:border-slate-700'} rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition text-slate-800 dark:text-slate-200 font-medium`}
+                                                    />
+                                                    <button 
+                                                        onClick={async () => {
+                                                            const phoneToSave = displayPhone;
+                                                            if (!phoneToSave) {
+                                                                alert("Lütfen geçerli bir telefon numarası girin.");
+                                                                return;
+                                                            }
+                                                            try {
+                                                                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/update_phone`, {
+                                                                    method: 'POST',
+                                                                    headers: {'Content-Type': 'application/json'},
+                                                                    body: JSON.stringify({ place_id: branch.place_id, phone: phoneToSave, branch_name: branch.name })
+                                                                });
+                                                                if (res.ok) {
+                                                                    const newEdited = {...editedPhones};
+                                                                    delete newEdited[branch.place_id];
+                                                                    setEditedPhones(newEdited);
+                                                                    fetchAllPhones();
+                                                                    alert("Numara başarıyla kaydedildi!");
+                                                                }
+                                                            } catch (e) { console.error(e); }
+                                                        }}
+                                                        disabled={!displayPhone || (!hasUnsavedChanges && existingPhone)}
+                                                        className={`px-6 py-2.5 rounded-lg text-sm font-bold shadow-md transition whitespace-nowrap flex items-center justify-center
+                                                            ${(!displayPhone || (!hasUnsavedChanges && existingPhone)) 
+                                                                ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed' 
+                                                                : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-blue-500/25'}`}
+                                                    >
+                                                        {(!hasUnsavedChanges && existingPhone) ? 'Kaydedildi' : 'Kaydet'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             )}
                         </div>
                     )}
