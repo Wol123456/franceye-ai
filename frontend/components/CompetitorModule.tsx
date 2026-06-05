@@ -48,13 +48,13 @@ export default function CompetitorModule({ data, selectedCity }: CompetitorModul
             const reqA = fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/search_branches`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: brandA, city: city })
+                body: JSON.stringify({ query: `${brandA} şubeleri ${city}`, city: city })
             });
 
             const reqB = fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/search_branches`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: brandB, city: city })
+                body: JSON.stringify({ query: `${brandB} şubeleri ${city}`, city: city })
             });
 
             const [resA, resB] = await Promise.all([reqA, reqB]);
