@@ -208,7 +208,11 @@ export default function CompetitorModule({ data, selectedCity }: CompetitorModul
                                     <p className="text-slate-500 text-sm italic">Bu ilde şube bulunamadı.</p>
                                 ) : (
                                     branchesA.map((branch: any, idx: number) => (
-                                        <div key={branch.place_id || idx} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 flex items-center justify-between group hover:border-blue-500/50 transition">
+                                        <div 
+                                            key={branch.place_id || idx} 
+                                            onClick={() => window.open(`/?place_id=${branch.place_id}&name=${encodeURIComponent(branch.name)}&address=${encodeURIComponent(branch.address || '')}`, '_blank')}
+                                            className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 flex items-center justify-between group hover:border-blue-500/50 transition cursor-pointer"
+                                        >
                                             <div className="flex-1 pr-4">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 text-[10px] font-black px-1.5 py-0.5 rounded">#{idx + 1}</span>
@@ -240,7 +244,11 @@ export default function CompetitorModule({ data, selectedCity }: CompetitorModul
                                     <p className="text-slate-500 text-sm italic">Bu ilde şube bulunamadı.</p>
                                 ) : (
                                     branchesB.map((branch: any, idx: number) => (
-                                        <div key={branch.place_id || idx} className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 flex items-center justify-between group hover:border-purple-500/50 transition">
+                                        <div 
+                                            key={branch.place_id || idx} 
+                                            onClick={() => window.open(`/?place_id=${branch.place_id}&name=${encodeURIComponent(branch.name)}&address=${encodeURIComponent(branch.address || '')}`, '_blank')}
+                                            className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 flex items-center justify-between group hover:border-purple-500/50 transition cursor-pointer"
+                                        >
                                             <div className="flex-1 pr-4">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 text-[10px] font-black px-1.5 py-0.5 rounded">#{idx + 1}</span>

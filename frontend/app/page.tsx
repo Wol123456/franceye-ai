@@ -336,6 +336,22 @@ export default function Dashboard() {
         ? data.critical_alerts.map((a: any, idx: number) => ({ ...a, originalIdx: idx })).filter((a: any) => !ignoredAlerts.includes(a.originalIdx))
         : [];
 
+    // URL Parameter Auto-Analysis Effect
+    React.useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const place_id = params.get('place_id');
+            const name = params.get('name');
+            const address = params.get('address');
+            
+            if (place_id && name) {
+                // Remove params so it doesn't loop if user navigates back to search
+                window.history.replaceState({}, document.title, window.location.pathname);
+                analyzeBranch({ place_id, name, address });
+            }
+        }
+    }, []);
+
     // Live Notification Effect
     React.useEffect(() => {
         if (view !== 'search' || branches.length === 0) {
