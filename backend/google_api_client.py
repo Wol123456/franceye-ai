@@ -102,7 +102,7 @@ def get_place_details(place_id: str):
     # Fields: name, rating, user_ratings_total, geometry, reviews, website
     params = {
         "place_id": place_id,
-        "fields": "name,rating,user_ratings_total,geometry,reviews,photos,website,formatted_phone_number",
+        "fields": "name,rating,user_ratings_total,geometry,reviews,photos,website,formatted_phone_number,formatted_address",
         "key": API_KEY,
         "language": "tr"
     }
@@ -145,6 +145,7 @@ def fetch_google_data(query: str = None, place_id: str = None, lat: float = None
     query_name = urllib.parse.quote(details.get("name", "place"))
     formatted_data = {
         "name": details.get("name", ""),
+        "address": details.get("formatted_address", ""),
         "score": details.get("rating", 0.0),
         "review_count": details.get("user_ratings_total", 0),
         "coords": details.get("geometry", {}).get("location", {"lat": 0, "lng": 0}),

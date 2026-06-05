@@ -1084,7 +1084,7 @@ export default function Dashboard() {
                     )}
 
                     {activeModule === 'competitor' && (
-                        <CompetitorModule data={data} />
+                        <CompetitorModule data={data} selectedCity={selectedCity} />
                     )}
 
                     {activeModule === 'settings' && (

@@ -72,6 +72,7 @@ class ComplaintLog(BaseModel):
 
 class AnalysisResult(BaseModel):
     branch_name: str
+    address: str = ""
     place_id: str = ""
     health_score: float
     health_analysis: str
@@ -387,6 +388,7 @@ async def analyze_branch(request: BranchRequest):
 
         return {
             "branch_name": final_name,
+            "address": g_data.get("address", ""),
             "place_id": request.place_id or "",
             "health_score": health_score,
             "health_analysis": analysis_text,
