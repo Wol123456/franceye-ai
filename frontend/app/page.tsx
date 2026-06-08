@@ -70,7 +70,7 @@ export default function Dashboard() {
     const [activeSettingsTab, setActiveSettingsTab] = useState<'current' | 'all' | 'admin'>('current');
     const [allPhones, setAllPhones] = useState<any[]>([]);
     const [admins, setAdmins] = useState<any[]>([]);
-    const [newAdmin, setNewAdmin] = useState({ name: '', email: '', phone: '', receive_emails: false });
+    const [newAdmin, setNewAdmin] = useState({ name: '', email: '', phone: '', photo: '', receive_emails: false });
     const [isAdminFormOpen, setIsAdminFormOpen] = useState(false);
     const [editingAdminId, setEditingAdminId] = useState<string | null>(null);
 
@@ -108,7 +108,7 @@ export default function Dashboard() {
 
     const handleAddNewAdmin = () => {
         setEditingAdminId(null);
-        setNewAdmin({ name: '', email: '', phone: '', receive_emails: false });
+        setNewAdmin({ name: '', email: '', phone: '', photo: '', receive_emails: false });
         setIsAdminFormOpen(true);
     };
 
@@ -127,7 +127,7 @@ export default function Dashboard() {
                 if (res.ok) {
                     const data = await res.json();
                     setAdmins(admins.map(a => a.id === editingAdminId ? data.admin : a));
-                    setNewAdmin({ name: '', email: '', phone: '', receive_emails: false });
+                    setNewAdmin({ name: '', email: '', phone: '', photo: '', receive_emails: false });
                     setEditingAdminId(null);
                     setIsAdminFormOpen(false);
                     alert("Yönetici güncellendi!");
@@ -141,7 +141,7 @@ export default function Dashboard() {
                 if (res.ok) {
                     const data = await res.json();
                     setAdmins([...admins, data.admin]);
-                    setNewAdmin({ name: '', email: '', phone: '', receive_emails: false });
+                    setNewAdmin({ name: '', email: '', phone: '', photo: '', receive_emails: false });
                     setIsAdminFormOpen(false);
                     alert("Yönetici eklendi!");
                 }
@@ -1092,7 +1092,7 @@ export default function Dashboard() {
                             handleAddNewAdmin={handleAddNewAdmin}
                             handleEditAdmin={(admin) => {
                                 setEditingAdminId(admin.id);
-                                setNewAdmin({ name: admin.name, email: admin.email, phone: admin.phone, receive_emails: admin.receive_emails });
+                                setNewAdmin({ name: admin.name, email: admin.email, phone: admin.phone, photo: admin.photo || '', receive_emails: admin.receive_emails });
                                 setIsAdminFormOpen(true);
                             }}
                             handleDeleteAdmin={deleteAdmin}

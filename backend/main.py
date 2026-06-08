@@ -8,6 +8,16 @@ import os
 import json
 import urllib.parse
 import uuid
+from openai import OpenAI
+import json
+
+from dotenv import load_dotenv\nload_dotenv()\n# API Key is read from environment automatically
+try:
+    openai_client = OpenAI()
+except Exception as e:
+    print("OpenAI Init Error:", e)
+    openai_client = None
+
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
@@ -36,10 +46,25 @@ except Exception as e:
     print(f"Firebase Init Error: {e}")
     db = None
 
-# Fallbacks for missing DB
-branch_phones_db = {}
-complaints_db = []
-admins_db = []
+# Fallbacks for missing DB (JSON Backed)
+DB_FILE = "local_db.json"
+def load_db():
+    if os.path.exists(DB_FILE):
+        with open(DB_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {"branch_phones_db": {}, "complaints_db": [], "admins_db": []}
+
+def save_db(data):
+    with open(DB_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+local_db = load_db()
+branch_phones_db = local_db["branch_phones_db"]
+complaints_db = local_db["complaints_db"]
+admins_db = local_db["admins_db"]
+
+def persist():
+    save_db({"branch_phones_db": branch_phones_db, "complaints_db": complaints_db, "admins_db": admins_db})
 
 # --- App Setup ---
 app = FastAPI(title="FrancEye AI")
@@ -194,40 +219,55 @@ def scrape_trendyol(query: str):
 
 # --- AI Generators ---
 def generate_trend_keywords(reviews):
-    if not reviews:
+    if not reviews or not openai_client:
         return []
     
-    # Mock NLP extraction
-    words = {"yavaş": -20, "soğuk": -15, "hızlı": 30, "lezzetli": 40, "güler yüzlü": 25, "kaba": -25, "temiz": 15, "pis": -30, "sıcak": 20, "kurye": -10}
-    text = " ".join([r.get("text", "").lower() for r in reviews])
+    text = " ".join([r.get("text", "") for r in reviews if r.get("text")])
+    if not text.strip():
+        return []
+        
+    prompt = f"""Sen bir müşteri deneyimi veri analistisin.
+Aşağıdaki müşteri yorumlarını analiz et ve en çok tekrar eden 6 önemli konuyu (şikayet veya övgü, maksimum 2 kelime) çıkar.
+JSON formatında "{{\"keywords\": [{{ \"word\": \"KELİME\", \"count\": 5, \"sentiment\": \"positive/negative\" }}]}}" döndür.
+Yorumlar:
+{text[:2000]}"""
     
-    results = []
-    for word, sentiment in words.items():
-        count = text.count(word)
-        if count > 0:
-            results.append({"word": word.upper(), "count": count, "sentiment": "positive" if sentiment > 0 else "negative"})
-            
-    return sorted(results, key=lambda x: x["count"], reverse=True)[:6]
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"}
+        )
+        data = json.loads(response.choices[0].message.content)
+        return data.get("keywords", [])
+    except Exception as e:
+        print("OpenAI Keywords Error:", e)
+        return []
 
 def generate_action_plan(alerts):
-    plan = []
-    categories = set([a["category"] for a in alerts])
-    
-    if "Hız" in categories:
-        plan.append({"task": "Kurye rotalarını optimize et ve mutfak çıkış hızını ölç.", "completed": False})
-    if "Personel" in categories:
-        plan.append({"task": "Müşteri ilişkileri ve güler yüz eğitimi düzenle.", "completed": False})
-    if "Temizlik" in categories:
-        plan.append({"task": "Günlük mutfak ve salon hijyen denetimlerini sıklaştır.", "completed": False})
-    if "Fiyat" in categories:
-        plan.append({"task": "Bölgesel rakip fiyat analizlerini tekrar gözden geçir.", "completed": False})
-    if "Trend Alarmı" in categories:
-        plan.append({"task": "Şube müdürü ile acil durum toplantısı organize et.", "completed": False})
+    if not alerts or not openai_client:
+        return [{"task": "Mevcut yüksek standartları korumaya devam et.", "completed": False}]
         
-    if not plan:
-        plan.append({"task": "Mevcut yüksek standartları korumaya devam et.", "completed": False})
-        
-    return plan
+    alert_texts = "\n".join([f"- {a['category']}: {a['text']}" for a in alerts])
+    prompt = f"""Sen bir B2B Franchise Denetleme Uzmanısın.
+Aşağıda bir şubeye ait kritik şikayetler ve yapay zeka uyarıları yer alıyor.
+Şube müdürünün bu sorunları acilen çözmesi için 3-4 maddelik çok net, aksiyon odaklı bir eylem planı çıkar.
+Maddeler profesyonel bir dille yazılsın.
+JSON formatında "{{\"plan\": [{{ \"task\": \"Aksiyon cümlesi\", \"completed\": false }}]}}" döndür.
+Uyarılar:
+{alert_texts}"""
+
+    try:
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"}
+        )
+        data = json.loads(response.choices[0].message.content)
+        return data.get("plan", [])
+    except Exception as e:
+        print("OpenAI Action Plan Error:", e)
+        return [{"task": "Sistem hatası nedeniyle plan oluşturulamadı.", "completed": False}]
 
 # --- Scoring Logic (REAL DATA ONLY) ---
 def calculate_score(google_data):
@@ -446,6 +486,8 @@ class PhoneUpdateRequest(BaseModel):
     place_id: str
     phone: str
     branch_name: str = ""
+    manager_name: str = ""
+    photo: str = ""
 
 @app.post("/update_phone")
 async def update_phone(req: PhoneUpdateRequest):
@@ -453,10 +495,18 @@ async def update_phone(req: PhoneUpdateRequest):
         if db:
             db.collection("branch_phones").document(req.place_id).set({
                 "phone": req.phone,
-                "name": req.branch_name
+                "name": req.branch_name,
+                "manager_name": req.manager_name,
+                "photo": req.photo
             })
         else:
-            branch_phones_db[req.place_id] = {"phone": req.phone, "name": req.branch_name}
+            branch_phones_db[req.place_id] = {
+                "phone": req.phone, 
+                "name": req.branch_name,
+                "manager_name": req.manager_name,
+                "photo": req.photo
+            }
+            persist()
     return {"status": "success", "phone": req.phone}
 
 @app.get("/all_phones")
@@ -466,10 +516,10 @@ async def get_all_phones():
         docs = db.collection("branch_phones").stream()
         for doc in docs:
             data = doc.to_dict()
-            res.append({"place_id": doc.id, "name": data.get("name", "Bilinmeyen Şube"), "phone": data.get("phone", "")})
+            res.append({"place_id": doc.id, "name": data.get("name", "Bilinmeyen Şube"), "phone": data.get("phone", ""), "manager_name": data.get("manager_name", ""), "photo": data.get("photo", "")})
     else:
         for pid, data in branch_phones_db.items():
-            res.append({"place_id": pid, "name": data.get("name", "Bilinmeyen Şube"), "phone": data.get("phone", "")})
+            res.append({"place_id": pid, "name": data.get("name", "Bilinmeyen Şube"), "phone": data.get("phone", ""), "manager_name": data.get("manager_name", ""), "photo": data.get("photo", "")})
     return res
 
 
@@ -485,6 +535,7 @@ class AdminProfileCreate(BaseModel):
     name: str
     email: str
     phone: str
+    photo: str = ""
     receive_emails: bool = False
 
 @app.post("/admins")
@@ -494,12 +545,14 @@ async def add_admin(data: AdminProfileCreate):
         "name": data.name,
         "email": data.email,
         "phone": data.phone,
+        "photo": data.photo,
         "receive_emails": data.receive_emails
     }
     if db:
         db.collection("admins").document(new_admin["id"]).set(new_admin)
     else:
         admins_db.append(new_admin)
+        persist()
     return {"status": "success", "admin": new_admin}
 
 @app.delete("/admins/{admin_id}")
@@ -508,7 +561,8 @@ async def delete_admin(admin_id: str):
         db.collection("admins").document(admin_id).delete()
     else:
         global admins_db
-        admins_db = [a for a in admins_db if a["id"] != admin_id]
+        admins_db[:] = [a for a in admins_db if a["id"] != admin_id]
+        persist()
     return {"status": "success"}
 
 @app.put("/admins/{admin_id}")
@@ -517,6 +571,7 @@ async def update_admin(admin_id: str, data: AdminProfileCreate):
         "name": data.name,
         "email": data.email,
         "phone": data.phone,
+        "photo": data.photo,
         "receive_emails": data.receive_emails
     }
     if db:
@@ -529,6 +584,7 @@ async def update_admin(admin_id: str, data: AdminProfileCreate):
         for a in admins_db:
             if a["id"] == admin_id:
                 a.update(updated_data)
+                persist()
                 return {"status": "success", "admin": a}
     return {"status": "error", "message": "Admin not found"}
 
