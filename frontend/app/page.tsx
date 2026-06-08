@@ -774,16 +774,35 @@ export default function Dashboard() {
                             </div>
                         )}
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            {/* 1. Sol Kolon: Skor ve Metrikler */}
-                        <div className="lg:col-span-1 space-y-6">
+                        {/* PREMIUM 12-COLUMN DASHBOARD LAYOUT */}
+                        
+                        {/* Başlık / Geri Dön */}
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 relative z-10 bg-white/40 dark:bg-slate-900/40 p-4 rounded-2xl backdrop-blur-md border border-slate-200 dark:border-white/10 shadow-sm">
+                            <div className="space-y-1 w-full md:w-auto">
+                                <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-3">
+                                    {data.branch_name}
+                                </h2>
+                                <p className="text-sm text-slate-500 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                                    {data.address || "Adres bilgisi yükleniyor..."}
+                                </p>
+                            </div>
+                            <button onClick={() => setView('search')} className="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition shadow-sm border border-slate-200 dark:border-white/5 flex items-center gap-2 shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                Listeye Dön
+                            </button>
+                        </div>
 
-                            {/* Ana Skor Kartı */}
-                            <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-md rounded-3xl p-8 border border-slate-300 dark:border-white/10 shadow-xl relative overflow-hidden group">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 relative z-10">
+                            
+                            {/* === TOP ROW === */}
+                            
+                            {/* 1. Health Score (Span 4) */}
+                            <div className="col-span-1 md:col-span-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-8 border border-slate-300 dark:border-white/10 shadow-xl relative overflow-hidden group flex flex-col justify-center min-h-[250px] transition hover:shadow-2xl hover:-translate-y-1">
                                 <div className={`absolute top-0 right-0 w-32 h-32 bg-current opacity-10 blur-3xl rounded-full ${getScoreColor(data.health_score)}`}></div>
 
                                 <h3 className="text-slate-600 dark:text-slate-400 text-sm font-semibold uppercase tracking-wider mb-2">Şube Sağlık Skoru</h3>
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between z-10">
                                     <span className={`text-7xl font-bold tracking-tighter ${getScoreColor(data.health_score)} drop-shadow-lg`}>
                                         {data.health_score}
                                     </span>
@@ -795,39 +814,112 @@ export default function Dashboard() {
                                     </div>
                                 </div>
 
-                                {/* İlerleme Çubuğu */}
-                                <div className="w-full bg-slate-200/50 dark:bg-slate-700/50 h-3 rounded-full mt-6 overflow-hidden">
+                                <div className="w-full bg-slate-200/50 dark:bg-slate-700/50 h-3 rounded-full mt-6 overflow-hidden z-10 shadow-inner">
                                     <div
                                         className={`h-full rounded-full transition-all duration-1000 ease-out ${getScoreColor(data.health_score).replace('text-', 'bg-')}`}
                                         style={{ width: `${data.health_score}%` }}
                                     />
                                 </div>
-
-                                {/* Sağlık Raporu Açıklaması */}
-                                <div className="mt-4 text-xs text-slate-600 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-200 dark:border-white/5 leading-relaxed">
-                                    <strong className="text-slate-700 dark:text-slate-300">Bu skor ne anlama geliyor?</strong><br/>
-                                    Şube sağlık skoru; Google puanı (%60), toplam yorum hacmi (%20) ve son yorumların duygu analizi (%20) birleştirilerek algoritma tarafından 100 üzerinden hesaplanan genel itibar endeksidir.
+                                <div className="mt-4 text-xs text-slate-500 dark:text-slate-400 leading-relaxed z-10">
+                                    Puan (%60), Yorum Hacmi (%20), Yapay Zeka Duygu Analizi (%20)
                                 </div>
                             </div>
 
-                            {/* Trend Grafiği (Son 3 Ay) */}
-                            <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 transition shadow-xl h-[250px] relative">
-                                <h3 className="text-slate-600 dark:text-slate-400 text-xs font-bold uppercase mb-4 flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                                    Son 1 Yıl Trend Analizi (Gerçek Veri Simülasyonu)
+                            {/* 2. Platform Puanı (Span 4) */}
+                            <div className="col-span-1 md:col-span-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-6 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 shadow-xl flex flex-col justify-between min-h-[250px] transition hover:shadow-2xl hover:-translate-y-1 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                                <div>
+                                    <div className="flex items-center justify-between mb-2 text-slate-600 dark:text-slate-400">
+                                        <div className="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-500"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                            <span className="text-xs font-bold uppercase tracking-wider">Google Puanı</span>
+                                        </div>
+                                        <span className="text-xs font-bold bg-slate-200/80 dark:bg-slate-700/80 px-2 py-1 rounded-lg text-slate-700 dark:text-slate-300 shadow-inner border border-slate-300/50 dark:border-slate-600/50">
+                                            {data.metrics.google_reviews.toLocaleString()} Yorum
+                                        </span>
+                                    </div>
+                                    <div className="text-4xl font-extrabold text-slate-900 dark:text-white group-hover:text-yellow-400 transition mb-4 flex items-end gap-2 drop-shadow-sm">
+                                        <span>{data.ratings[0].score}</span> 
+                                        <span className="text-slate-500 text-lg font-normal mb-1">/ 5.0</span>
+                                    </div>
+                                    
+                                    <div className="space-y-2 mt-2">
+                                        {[5, 4, 3, 2, 1].map(star => {
+                                            const count = data.rating_distribution?.[star] || 0;
+                                            const maxCount = Math.max(...Object.values(data.rating_distribution || { "5": 1 }) as number[]) || 1;
+                                            const pct = (count / maxCount) * 100;
+                                            
+                                            return (
+                                                <div key={star} className="flex items-center gap-2 text-xs">
+                                                    <div className="flex items-center gap-1 w-10 text-slate-600 dark:text-slate-400 font-bold">
+                                                        <span>{star}</span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none" className="text-yellow-500"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                                    </div>
+                                                    <div className="flex-1 h-2 bg-slate-200/80 dark:bg-slate-700/80 rounded-full overflow-hidden shadow-inner">
+                                                        <div 
+                                                            className="h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full transition-all duration-1000 ease-out" 
+                                                            style={{ width: `${pct}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 3. Harita (Span 4) */}
+                            <div className="col-span-1 md:col-span-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-0 border border-slate-300 dark:border-white/10 shadow-xl min-h-[250px] relative overflow-hidden group transition hover:shadow-2xl hover:-translate-y-1">
+                                <h3 className="absolute top-5 left-5 text-slate-900 dark:text-white font-bold mb-4 flex items-center gap-2 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 shadow-lg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                                    Şube Konumu
                                 </h3>
-                                <div className="h-[180px] w-full">
+                                <a 
+                                    href={data.map_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.branch_name)}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="absolute inset-0 z-0 opacity-80 hover:opacity-100 transition duration-500 block cursor-pointer"
+                                >
+                                    <iframe
+                                        width="100%"
+                                        height="100%"
+                                        frameBorder="0"
+                                        style={{ border: 0, filter: 'contrast(1.1) brightness(0.9)', pointerEvents: 'none' }}
+                                        src={`https://maps.google.com/maps?q=${data.coords.lat},${data.coords.lng}&z=16&output=embed`}
+                                        allowFullScreen
+                                        loading="lazy"
+                                    ></iframe>
+                                </a>
+                                <div className="absolute bottom-5 left-5 right-5 z-20 flex justify-between items-end pointer-events-none">
+                                    <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur text-[10px] font-mono px-3 py-1.5 rounded-xl border border-slate-300 dark:border-white/10 text-slate-700 dark:text-slate-300 shadow-lg">
+                                        Lat: {data.coords.lat?.toFixed(4)}<br/>Lng: {data.coords.lng?.toFixed(4)}
+                                    </div>
+                                    <div className="bg-blue-600 text-white p-2 rounded-xl shadow-lg pointer-events-auto cursor-pointer hover:bg-blue-500 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* === MIDDLE ROW === */}
+
+                            {/* 4. Trend Analizi (Span 8) */}
+                            <div className="col-span-1 md:col-span-8 bg-white/80 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-6 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 shadow-xl h-[320px] relative flex flex-col transition hover:shadow-2xl">
+                                <h3 className="text-slate-800 dark:text-white font-bold mb-4 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                    Son 1 Yıl Trend Analizi
+                                </h3>
+                                <div className="flex-1 w-full relative -ml-4">
                                     {data.score_history && data.score_history.length > 0 ? (
                                         <ResponsiveContainer width="100%" height="100%">
                                             <LineChart data={data.score_history}>
                                                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                                                <XAxis dataKey="date" stroke="#94a3b8" fontSize={10} tickMargin={10} axisLine={false} tickLine={false} />
+                                                <XAxis dataKey="date" stroke="#94a3b8" fontSize={11} tickMargin={10} axisLine={false} tickLine={false} />
                                                 <YAxis domain={[1, 5]} hide />
                                                 <Tooltip 
-                                                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '12px' }}
-                                                    itemStyle={{ color: '#38bdf8' }}
+                                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '13px', color: '#fff', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
+                                                    itemStyle={{ color: '#38bdf8', fontWeight: 'bold' }}
                                                 />
-                                                <Line type="monotone" dataKey="score" name="Google Puanı" stroke="#38bdf8" strokeWidth={3} dot={{ r: 4, fill: '#38bdf8', strokeWidth: 2, stroke: '#0f172a' }} activeDot={{ r: 6, fill: '#60a5fa' }} />
+                                                <Line type="monotone" dataKey="score" name="Skor" stroke="#3b82f6" strokeWidth={4} dot={{ r: 5, fill: '#3b82f6', strokeWidth: 3, stroke: '#ffffff' }} activeDot={{ r: 8, fill: '#60a5fa', stroke: '#fff', strokeWidth: 2 }} />
                                             </LineChart>
                                         </ResponsiveContainer>
                                     ) : (
@@ -836,67 +928,128 @@ export default function Dashboard() {
                                 </div>
                             </div>
 
-                        </div>
-
-                        {/* 2. Orta Kolon: Detaylar, Harita ve Loglar */}
-                        <div className="lg:col-span-2 space-y-6">
-
-                            {/* Başlık / Geri Dön */}
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <div className="space-y-2 w-full md:w-auto">
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                                        {data.branch_name}
-                                    </h2>
+                            {/* 5. Kelime Bulutu (Span 4) */}
+                            <div className="col-span-1 md:col-span-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-6 border border-slate-200 dark:border-white/5 shadow-xl h-[320px] overflow-y-auto custom-scrollbar flex flex-col transition hover:shadow-2xl">
+                                <h3 className="text-slate-800 dark:text-white font-bold mb-5 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-cyan-500"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    AI Müşteri Trendleri
+                                </h3>
+                                <div className="flex flex-wrap gap-2.5">
+                                    {data.trend_keywords && data.trend_keywords.length > 0 ? (
+                                        data.trend_keywords.map((kw: any, i: number) => (
+                                            <span key={i} className={`font-extrabold px-4 py-2 rounded-xl border shadow-sm transition hover:scale-105 cursor-default ${kw.sentiment === 'positive' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30' : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30'}`} style={{ fontSize: `${Math.max(0.85, 0.85 + (kw.count * 0.04))}rem` }}>
+                                                {kw.word} <span className="opacity-60 text-xs ml-1">({kw.count})</span>
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <p className="text-slate-500 text-sm italic">Yeterli trend verisi bulunamadı.</p>
+                                    )}
                                 </div>
-                                <button onClick={() => setView('search')} className="text-sm text-blue-600 dark:text-blue-400 hover:underline shrink-0">← Listeye Dön</button>
                             </div>
 
-                            {/* Detay Kartları Grid (Son Yorumlar & Puan) */}
-                            <div className="grid grid-cols-2 gap-4">
-                                {/* Google Yorumları Listesi */}
-                                <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 transition group col-span-2 md:col-span-1 h-[320px] overflow-y-auto custom-scrollbar flex flex-col relative">
-                                    <div className="flex items-center justify-between gap-2 mb-4 text-slate-600 dark:text-slate-400 sticky top-0 bg-white dark:bg-slate-800/90 p-1 rounded-lg backdrop-blur-md z-10 border border-slate-300/50 dark:border-slate-700/50">
-                                        <div className="flex items-center gap-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h6" /><path d="M22 12h-6" /><path d="M12 2v6" /><path d="M12 22v-6" /><path d="M20 7l-3-3" /><path d="M4 20l3-3" /><path d="M4 7h16" /><path d="M4 17h16" /></svg>
-                                            <span className="text-xs font-bold uppercase text-slate-900 dark:text-white">Son Müşteri Yorumları</span>
-                                        </div>
-                                        <button 
-                                            onClick={() => setIsReviewsModalOpen(true)}
-                                            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-300 font-semibold bg-blue-500/10 hover:bg-blue-500/20 px-2 py-1 rounded transition flex items-center gap-1 border border-blue-500/20"
-                                        >
-                                            Son Mesajları Oku
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"></path><path d="M10 14L21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                        </button>
-                                    </div>
+                            {/* === BOTTOM ROW === */}
 
-                                    <div className="space-y-4">
-                                        {data.reviews && data.reviews.length > 0 ? (
-                                            data.reviews.map((review: any, idx: number) => (
-                                                <div key={idx} className="border-b border-slate-200 dark:border-white/5 pb-3 last:border-0 last:pb-0">
-                                                    <div className="flex justify-between items-start mb-1">
-                                                        <span className="text-sm font-semibold text-slate-900 dark:text-white">{review.author_name}</span>
-                                                        <span className="text-xs text-slate-500">{review.relative_time_description}</span>
-                                                    </div>
-                                                    <div className="flex gap-1 mb-2 items-center">
-                                                        {[...Array(5)].map((_, i) => (
-                                                            <svg key={i} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill={i < (review.rating || 0) ? "#fbbf24" : "#475569"} stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                                                        ))}
-                                                        {review.ai_categories && review.ai_categories.map((cat: string, ci: number) => (
-                                                            <span key={ci} className="ml-2 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 border border-blue-500/30">{cat}</span>
-                                                        ))}
-                                                    </div>
-                                                    <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic mb-3">
-                                                        "{review.text && review.text.length > 100 ? review.text.substring(0, 100) + '...' : review.text}"
-                                                    </p>
-                                                    <button onClick={() => setAiResponseModal({isOpen: true, review, responseText: generateAiResponse(review)})} className="text-[10px] bg-purple-600/10 text-purple-600 hover:bg-purple-600/20 dark:text-purple-400 font-bold px-2 py-1 rounded-md transition flex items-center gap-1 border border-purple-500/20 w-fit">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                                                        AI ile Yanıtla
-                                                    </button>
+                            {/* 6. AI Aksiyon Planı (Span 4) */}
+                            <div className="col-span-1 md:col-span-4 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-900/20 dark:to-indigo-900/20 backdrop-blur-md rounded-3xl p-6 border border-purple-500/20 shadow-xl h-[400px] overflow-y-auto custom-scrollbar relative flex flex-col group transition hover:shadow-2xl">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-purple-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                                <h3 className="text-slate-900 dark:text-white font-bold mb-5 flex items-center gap-2 relative z-10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-500 drop-shadow-md"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                                    AI Yönetim Planı
+                                </h3>
+                                <ul className="space-y-4 relative z-10">
+                                    {data.action_plan && data.action_plan.length > 0 ? (
+                                        data.action_plan.map((plan: any, i: number) => (
+                                            <li key={i} className="flex gap-3 items-start bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-white/20 dark:border-slate-700/50 shadow-sm hover:border-purple-500/30 transition">
+                                                <input type="checkbox" className="mt-0.5 w-5 h-5 accent-purple-600 rounded-md cursor-pointer shrink-0" />
+                                                <span className="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">{plan.task}</span>
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center h-full text-slate-500">
+                                            <p className="text-sm">Tüm standartlar harika görünüyor.</p>
+                                        </div>
+                                    )}
+                                </ul>
+                            </div>
+
+                            {/* 7. Son Yorumlar (Span 4) */}
+                            <div className="col-span-1 md:col-span-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-6 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 transition shadow-xl h-[400px] overflow-y-auto custom-scrollbar flex flex-col relative">
+                                <div className="flex items-center justify-between mb-5 sticky top-0 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-2 -mt-2 -mx-2 rounded-xl z-20 border border-slate-200 dark:border-slate-700 shadow-sm">
+                                    <div className="flex items-center gap-2 pl-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-700 dark:text-white"><path d="M2 12h6" /><path d="M22 12h-6" /><path d="M12 2v6" /><path d="M12 22v-6" /><path d="M20 7l-3-3" /><path d="M4 20l3-3" /><path d="M4 7h16" /><path d="M4 17h16" /></svg>
+                                        <span className="text-sm font-bold text-slate-900 dark:text-white">Son Yorumlar</span>
+                                    </div>
+                                    <button 
+                                        onClick={() => setIsReviewsModalOpen(true)}
+                                        className="text-xs text-white font-bold bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-md"
+                                    >
+                                        Tümünü Gör
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {data.reviews && data.reviews.length > 0 ? (
+                                        data.reviews.map((review: any, idx: number) => (
+                                            <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 transition hover:border-blue-500/30">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className="text-sm font-bold text-slate-900 dark:text-white truncate pr-2">{review.author_name}</span>
+                                                    <span className="text-[10px] font-medium text-slate-500 shrink-0">{review.relative_time_description}</span>
                                                 </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-center text-slate-500 py-10">
-                                                <p>Henüz detaylı yorum verisi yok.</p>
+                                                <div className="flex gap-1 mb-3 items-center">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <svg key={i} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill={i < (review.rating || 0) ? "#fbbf24" : "#475569"} stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                                    ))}
+                                                    {review.ai_categories && review.ai_categories.map((cat: string, ci: number) => (
+                                                        <span key={ci} className="ml-2 text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">{cat}</span>
+                                                    ))}
+                                                </div>
+                                                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic mb-3 line-clamp-3">
+                                                    "{review.text}"
+                                                </p>
+                                                <button onClick={() => setAiResponseModal({isOpen: true, review, responseText: generateAiResponse(review)})} className="text-[10px] bg-indigo-500/10 text-indigo-700 hover:bg-indigo-500/20 dark:text-indigo-400 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 border border-indigo-500/20">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                                    AI Yanıtla
+                                                </button>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center text-slate-500 py-10">
+                                            <p className="text-sm">Yorum verisi yok.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* 8. İletilen Loglar (Span 4) */}
+                            <div className="col-span-1 md:col-span-4 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 dark:from-emerald-900/20 dark:to-teal-900/20 backdrop-blur-md rounded-3xl p-6 border border-emerald-500/20 shadow-xl h-[400px] flex flex-col relative overflow-hidden group transition hover:shadow-2xl">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                                <div className="flex justify-between items-center mb-5 z-10 relative">
+                                    <h3 className="text-slate-900 dark:text-white font-bold flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500 drop-shadow-md"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                        İletilen Rapor Logları
+                                    </h3>
+                                </div>
+
+                                <div className="flex-1 w-full relative rounded-2xl overflow-y-auto border border-white/20 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 p-5 space-y-4 custom-scrollbar z-10">
+                                    {sentLogs.filter(log => log.branch_name === data.branch_name).length > 0 ? (
+                                        sentLogs.filter(log => log.branch_name === data.branch_name).map((log, i) => (
+                                            <div key={i} className="border-l-4 border-emerald-500 pl-4 py-1">
+                                                <div className="flex justify-between items-start mb-1.5">
+                                                    <span className="text-xs font-extrabold text-slate-900 dark:text-white bg-emerald-500/10 px-2 py-0.5 rounded text-emerald-700 dark:text-emerald-400">{log.type} İletisi</span>
+                                                    <span className="text-[10px] font-mono text-slate-500">{log.date}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{log.message}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center h-full text-slate-500 opacity-60">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mb-4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                            <p className="text-sm font-medium">Henüz yöneticiye bir rapor iletilmedi.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
                                                 <p className="text-xs mt-2">Toplam Yorum: {data.metrics.google_reviews.toLocaleString()}</p>
                                             </div>
                                         )}
