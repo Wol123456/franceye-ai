@@ -1049,12 +1049,11 @@ export default function Dashboard() {
                                     )}
                                 </div>
                             </div>
-
+                        </div>
                     </div>
                 )}
             </div>
-
-                                </div> {/* End Dashboard */}
+        </div>
 
                     {activeModule === 'directory' && (
                         <DirectoryModule 
