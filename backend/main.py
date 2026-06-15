@@ -11,7 +11,9 @@ import uuid
 from openai import OpenAI
 import json
 
-from dotenv import load_dotenv\nload_dotenv()\n# API Key is read from environment automatically
+from dotenv import load_dotenv
+load_dotenv()
+# API Key is read from environment automatically
 try:
     openai_client = OpenAI()
 except Exception as e:
