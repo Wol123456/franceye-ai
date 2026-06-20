@@ -394,7 +394,7 @@ export default function Dashboard() {
 
     return (
         <div className={isDarkMode ? 'dark' : ''}>
-            <div className="flex h-screen bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-hidden relative">
+            <div className="flex h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-hidden relative">
                 
                 {/* Mobile Sidebar Overlay */}
                 {isSidebarOpen && (
@@ -917,7 +917,7 @@ export default function Dashboard() {
                                                 <XAxis dataKey="date" stroke="#94a3b8" fontSize={11} tickMargin={10} axisLine={false} tickLine={false} />
                                                 <YAxis domain={[1, 5]} hide />
                                                 <Tooltip 
-                                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '13px', color: '#fff', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
+                                                    contentStyle={{ backgroundColor: '#090A0E', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '13px', color: '#fff', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
                                                     itemStyle={{ color: '#38bdf8', fontWeight: 'bold' }}
                                                 />
                                                 <Line type="monotone" dataKey="score" name="Skor" stroke="#3b82f6" strokeWidth={4} dot={{ r: 5, fill: '#3b82f6', strokeWidth: 3, stroke: '#ffffff' }} activeDot={{ r: 8, fill: '#60a5fa', stroke: '#fff', strokeWidth: 2 }} />

@@ -109,7 +109,7 @@ export default function DirectoryModule({
                     </button>
                 </div>
 
-                <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50 dark:bg-[#0f172a]/50">
+                <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50 dark:bg-slate-950/50">
                     
                     {/* ADMİN TAB */}
                     {currentTab === 'admin' && (
