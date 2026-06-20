@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import DirectoryModule from '../components/DirectoryModule';
+import AeoModule from '../components/AeoModule';
 import CompetitorModule from '../components/CompetitorModule';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -1078,6 +1079,10 @@ export default function Dashboard() {
                             }}
                             handleDeleteAdmin={deleteAdmin}
                         />
+                    )}
+
+                    {activeModule === 'aeo' && (
+                        <AeoModule data={data} />
                     )}
 
                     {activeModule === 'competitor' && (
