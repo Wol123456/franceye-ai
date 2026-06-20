@@ -6,6 +6,7 @@ interface AeoModuleProps {
 
 export default function AeoModule({ data }: AeoModuleProps) {
     const [activeTab, setActiveTab] = useState('score');
+    const [customKeywords, setCustomKeywords] = useState<Array<{word: string, count: number, target: number}>>([]);
     
     if (!data) {
         return (
@@ -25,6 +26,13 @@ export default function AeoModule({ data }: AeoModuleProps) {
     const aeoScore = Math.min(98, Math.round(((data.health_score || 0) * 0.8) + ((data.metrics?.google_reviews || 0) > 500 ? 15 : 5)));
     const targetKeywords = data.trend_keywords?.slice(0, 4) || [{word: 'Temiz', count: 12}, {word: 'Hızlı', count: 8}, {word: 'Kahve', count: 24}];
     const consistencyScore = 85;
+
+    const handleAddKeyword = () => {
+        const word = window.prompt('Yapay zeka için hedeflemek istediğiniz yeni anahtar kelimeyi yazın (Örn: Bebek Dostu):');
+        if (word && word.trim()) {
+            setCustomKeywords([...customKeywords, { word: word.trim(), count: 0, target: 50 }]);
+        }
+    };
 
     return (
         <div className="animate-fade-in relative max-w-7xl mx-auto p-6 md:p-10 pt-6 space-y-8">
@@ -136,10 +144,11 @@ export default function AeoModule({ data }: AeoModuleProps) {
                                 </h3>
                                 <p className="text-sm text-slate-500 mt-1">Müşterilerinizi yönlendirerek yapay zeka veritabanlarına girmesini istediğiniz özellikler.</p>
                             </div>
-                            <button className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 rounded-lg text-sm font-bold transition">Yeni Kelime Ekle</button>
+                            <button onClick={handleAddKeyword} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 rounded-lg text-sm font-bold transition">Yeni Kelime Ekle</button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Varsayılan Kelimeler */}
                             <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-white/5">
                                 <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Hedeflenen Kelime</div>
                                 <div className="text-2xl font-black text-slate-800 dark:text-white mb-4">"Hızlı İnternet"</div>
@@ -164,7 +173,22 @@ export default function AeoModule({ data }: AeoModuleProps) {
                                 </div>
                             </div>
 
-                            <div className="bg-purple-500/10 dark:bg-purple-900/20 p-6 rounded-2xl border border-purple-500/30 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-purple-500/20 transition">
+                            {/* Kullanıcının Eklediği Kelimeler */}
+                            {customKeywords.map((kw, i) => (
+                                <div key={i} className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-blue-500/30">
+                                    <div className="text-xs font-bold text-blue-500 uppercase tracking-wider mb-2">Yeni Kampanya</div>
+                                    <div className="text-2xl font-black text-slate-800 dark:text-white mb-4">"{kw.word}"</div>
+                                    <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full mb-2">
+                                        <div className="bg-blue-500 h-2 rounded-full" style={{width: `${(kw.count/kw.target)*100}%`}}></div>
+                                    </div>
+                                    <div className="flex justify-between text-xs text-slate-500">
+                                        <span>Son 30 günde: {kw.count} kez geçti</span>
+                                        <span>Hedef: {kw.target}</span>
+                                    </div>
+                                </div>
+                            ))}
+
+                            <div onClick={handleAddKeyword} className="bg-purple-500/10 dark:bg-purple-900/20 p-6 rounded-2xl border border-purple-500/30 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-purple-500/20 transition min-h-[160px]">
                                 <div className="w-12 h-12 rounded-full bg-purple-500 text-white flex items-center justify-center text-2xl mb-3">+</div>
                                 <h4 className="font-bold text-purple-700 dark:text-purple-400">Yeni Kampanya</h4>
                                 <p className="text-xs text-purple-600/70 dark:text-purple-300/70 mt-1">Müşterilerinize kahve yanında karekod sunarak spesifik yorum isteyin.</p>
