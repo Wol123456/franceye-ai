@@ -14,23 +14,23 @@ export default function Sidebar({ activeModule, setActiveModule, isDarkMode, set
         <aside className="w-64 bg-slate-50 dark:bg-slate-900 border-r border-slate-200 dark:border-white/10 flex flex-col z-20 shadow-xl h-full flex-shrink-0">
             <div className="p-6 cursor-pointer" onClick={() => { setActiveModule('dashboard'); setView('search'); }}>
                 <img src="/logo.png" alt="FrancEye AI" className="h-10 w-auto bg-white p-1 rounded-lg mb-4 shadow" />
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-emerald-400 bg-clip-text text-transparent tracking-tight">FrancEye AI</h2>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-emerald-400 bg-clip-text text-transparent tracking-tight">FrancEye AI</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Yönetim Paneli</p>
             </div>
             <nav className="flex-1 px-4 space-y-2 mt-4">
-                <button onClick={() => { setActiveModule('dashboard'); setView('search'); }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'dashboard' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
+                <button onClick={() => { setActiveModule('dashboard'); setView('search'); }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'dashboard' ? 'bg-blue-800 text-white shadow-lg shadow-blue-700/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
                     📊 Şube Sağlığı
                 </button>
-                <button onClick={() => setActiveModule('aeo')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'aeo' ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' : 'hover:bg-purple-100 dark:hover:bg-purple-900/30 text-purple-700 dark:text-purple-300'}`}>
+                <button onClick={() => setActiveModule('aeo')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'aeo' ? 'bg-slate-700 text-white shadow-lg shadow-slate-600/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800/30 text-purple-700 dark:text-purple-300'}`}>
                     🧠 Yapay Zeka (AEO)
                 </button>
-                <button onClick={() => setActiveModule('competitor')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'competitor' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
+                <button onClick={() => setActiveModule('competitor')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'competitor' ? 'bg-blue-800 text-white shadow-lg shadow-blue-700/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
                     ⚔️ Rakip Analizi
                 </button>
-                <button onClick={onDirectoryClick} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'directory' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
+                <button onClick={onDirectoryClick} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'directory' ? 'bg-blue-800 text-white shadow-lg shadow-blue-700/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
                     📒 Rehber & Yönetici
                 </button>
-                <button onClick={() => setActiveModule('settings')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'settings' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
+                <button onClick={() => setActiveModule('settings')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium ${activeModule === 'settings' ? 'bg-blue-800 text-white shadow-lg shadow-blue-700/30' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}>
                     ⚙️ Ayarlar
                 </button>
             </nav>

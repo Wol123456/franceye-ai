@@ -394,7 +394,7 @@ export default function Dashboard() {
 
     return (
         <div className={isDarkMode ? 'dark' : ''}>
-            <div className="flex h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans selection:bg-blue-500/30 overflow-hidden relative">
+            <div className="flex h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans selection:bg-blue-700/30 overflow-hidden relative">
                 
                 {/* Mobile Sidebar Overlay */}
                 {isSidebarOpen && (
@@ -416,8 +416,8 @@ export default function Dashboard() {
                 </div>
                 <main className="flex-1 overflow-y-auto relative w-full">
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[100px]" />
+                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-800/20 rounded-full blur-[100px]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-[100px]" />
             </div>
             <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 pt-6 md:pt-10">
                 {/* Header */}
@@ -430,7 +430,7 @@ export default function Dashboard() {
                                 className="h-12 md:h-16 w-auto bg-white p-1 rounded-xl object-contain drop-shadow-md" 
                             />
                             <div>
-                                <h1 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent tracking-tight">
+                                <h1 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-cyan-400 to-emerald-400 bg-clip-text text-transparent tracking-tight">
                                     FrancEye AI
                                 </h1>
                                 <p className="text-slate-600 dark:text-slate-400 mt-1 md:mt-2 text-xs md:text-lg font-light hidden md:block">
@@ -495,7 +495,7 @@ export default function Dashboard() {
                                                         <span className="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap">Az önce</span>
                                                     </div>
                                                     <div className="flex flex-wrap gap-2">
-                                                        {unread.positive > 0 && <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded-md border border-emerald-500/20">+{unread.positive} Olumlu</span>}
+                                                        {unread.positive > 0 && <span className="text-[10px] text-emerald-400 font-bold bg-blue-700/10 px-1.5 py-0.5 rounded-md border border-blue-700/20">+{unread.positive} Olumlu</span>}
                                                         {unread.negative > 0 && <span className="text-[10px] text-red-400 font-bold bg-red-500/10 px-1.5 py-0.5 rounded-md border border-red-500/20">+{unread.negative} Kritik</span>}
                                                     </div>
                                                 </div>
@@ -535,7 +535,7 @@ export default function Dashboard() {
                                 value={branchName}
                                 onChange={(e) => setBranchName(e.target.value)}
                                 placeholder="Örn: Kahve Dünyası"
-                                className="w-full bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition text-slate-900 dark:text-white"
+                                className="w-full bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700/50 transition text-slate-900 dark:text-white"
                             />
                         </div>
 
@@ -545,7 +545,7 @@ export default function Dashboard() {
                             <select
                                 value={selectedCity}
                                 onChange={(e) => setSelectedCity(e.target.value)}
-                                className="w-full bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition text-slate-900 dark:text-white appearance-none cursor-pointer"
+                                className="w-full bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700/50 transition text-slate-900 dark:text-white appearance-none cursor-pointer"
                             >
                                 <option value="" disabled hidden>İl Seçiniz</option>
                                 {TURKISH_CITIES.map(city => (
@@ -559,7 +559,7 @@ export default function Dashboard() {
                             <button
                                 onClick={searchBranches}
                                 disabled={loading}
-                                className="w-full h-[50px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 disabled:opacity-50 text-slate-900 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-500/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                                className="w-full h-[50px] bg-gradient-to-r from-blue-800 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 text-slate-900 dark:text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-700/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                             >
                                 {loading && view === 'search' ? (
                                     <span className="animate-pulse">Aranıyor...</span>
@@ -584,17 +584,17 @@ export default function Dashboard() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                            <div className="bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-slate-200 dark:border-white/5 p-8 rounded-3xl hover:bg-white dark:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
+                            <div className="bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-slate-200 dark:border-white/5 p-8 rounded-3xl hover:bg-white dark:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-700/10 transition-all duration-300">
                                 <div className="text-5xl mb-6">⚡</div>
                                 <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Gerçek Zamanlı Analiz</h3>
                                 <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Tüm Google Haritalar verilerini anlık olarak çeker ve şubelerinizin gerçek performansını saniyeler içinde raporlar.</p>
                             </div>
-                            <div className="bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-slate-200 dark:border-white/5 p-8 rounded-3xl hover:bg-white dark:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
+                            <div className="bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-slate-200 dark:border-white/5 p-8 rounded-3xl hover:bg-white dark:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-700/10 transition-all duration-300">
                                 <div className="text-5xl mb-6">🧠</div>
                                 <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Yapay Zeka Ayrıştırma</h3>
                                 <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Müşteri yorumlarını okur ve Temizlik, Personel, Fiyat gibi kategorilere otomatik olarak ayırarak sorunun kaynağını bulur.</p>
                             </div>
-                            <div className="bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-slate-200 dark:border-white/5 p-8 rounded-3xl hover:bg-white dark:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300">
+                            <div className="bg-white/80 dark:bg-slate-800/40 backdrop-blur-md border border-slate-200 dark:border-white/5 p-8 rounded-3xl hover:bg-white dark:bg-slate-800/70 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-700/10 transition-all duration-300">
                                 <div className="text-5xl mb-6">🚨</div>
                                 <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">Kritik Uyarı Sistemi</h3>
                                 <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Düşüş trendlerini ve kırmızı çizgiyi aşan şikayetleri tespit edip tek tıkla şube müdürüne WhatsApp üzerinden iletir.</p>
@@ -617,7 +617,7 @@ export default function Dashboard() {
                                     <select 
                                         value={minScoreFilter} 
                                         onChange={e => setMinScoreFilter(Number(e.target.value))}
-                                        className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 cursor-pointer"
+                                        className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-700 cursor-pointer"
                                     >
                                         <option value={0}>Tümü</option>
                                         <option value={4.0}>4.0 ve Üzeri</option>
@@ -629,7 +629,7 @@ export default function Dashboard() {
                                     <select 
                                         value={sortOrder} 
                                         onChange={e => setSortOrder(e.target.value)}
-                                        className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-900 dark:text-white outline-none focus:border-emerald-500 cursor-pointer"
+                                        className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-700 cursor-pointer"
                                     >
                                         <option value="puan-azalan">Puan (Yüksekten Düşüğe)</option>
                                         <option value="puan-artan">Puan (Düşükten Yükseğe)</option>
@@ -643,10 +643,10 @@ export default function Dashboard() {
                             {filteredBranches.map((branch) => {
                                 const unread = getMockUnread(branch);
                                 return (
-                                <div key={branch.place_id} className="bg-white/80 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 hover:border-blue-500/50 p-6 rounded-2xl transition hover:bg-slate-50/60 dark:bg-slate-800/60 group cursor-pointer relative" onClick={() => analyzeBranch(branch)}>
+                                <div key={branch.place_id} className="bg-white/80 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 hover:border-blue-700/50 p-6 rounded-2xl transition hover:bg-slate-50/60 dark:bg-slate-800/60 group cursor-pointer relative" onClick={() => analyzeBranch(branch)}>
                                     
                                     {/* Leaderboard Badge */}
-                                    <div className="absolute top-0 left-0 bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-bold px-3 py-1 rounded-tl-2xl rounded-br-2xl shadow-md z-10 text-sm">#{filteredBranches.indexOf(branch) + 1}</div>
+                                    <div className="absolute top-0 left-0 bg-gradient-to-br from-blue-800 to-indigo-600 text-white font-bold px-3 py-1 rounded-tl-2xl rounded-br-2xl shadow-md z-10 text-sm">#{filteredBranches.indexOf(branch) + 1}</div>
 
                                     {/* Bildirim Balonları */}
                                     {(unread.positive > 0 || unread.negative > 0) && (
@@ -657,14 +657,14 @@ export default function Dashboard() {
                                                 </div>
                                             )}
                                             {unread.positive > 0 && (
-                                                <div className="bg-emerald-500 text-slate-900 dark:text-white text-[11px] font-extrabold w-7 h-7 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/50 border-[3px] border-slate-900 animate-bounce" style={{ animationDuration: '2.5s' }} title={`${unread.positive} Yeni Olumlu Yorum`}>
+                                                <div className="bg-blue-700 text-slate-900 dark:text-white text-[11px] font-extrabold w-7 h-7 rounded-full flex items-center justify-center shadow-lg shadow-blue-700/50 border-[3px] border-slate-900 animate-bounce" style={{ animationDuration: '2.5s' }} title={`${unread.positive} Yeni Olumlu Yorum`}>
                                                     {unread.positive}
                                                 </div>
                                             )}
                                         </div>
                                     )}
 
-                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:text-blue-400 transition mb-2 pr-4">{branch.name}</h3>
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-800 dark:text-blue-600 transition mb-2 pr-4">{branch.name}</h3>
                                     <p className="text-slate-600 dark:text-slate-400 text-sm mb-4 line-clamp-2">{branch.address}</p>
 
                                     <div className="flex items-center gap-4 text-sm font-mono">
@@ -676,13 +676,13 @@ export default function Dashboard() {
                                             ({branch.user_ratings_total} Yorum)
                                         </div>
                                         {branch.health_score && (
-                                            <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                                            <div className="flex items-center gap-1 text-blue-800 dark:text-blue-600">
                                                 <span className="font-bold">Skor: {branch.health_score}</span>
                                             </div>
                                         )}
                                     </div>
 
-                                    <button className="mt-4 w-full py-2 bg-slate-200 dark:bg-slate-700 hover:bg-emerald-600 rounded-lg text-sm font-semibold transition text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:text-white">
+                                    <button className="mt-4 w-full py-2 bg-slate-200 dark:bg-slate-700 hover:bg-blue-800 rounded-lg text-sm font-semibold transition text-slate-800 dark:text-slate-200 hover:text-slate-900 dark:text-white">
                                         Analize Git →
                                     </button>
                                 </div>
@@ -694,7 +694,7 @@ export default function Dashboard() {
                 {/* --- VIEW: SEARCH ANALYZING --- */}
                 {loading && view === 'dashboard' && (
                     <div className="text-center py-20">
-                        <div className="animate-spin w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-6"></div>
+                        <div className="animate-spin w-16 h-16 border-4 border-blue-700 border-t-transparent rounded-full mx-auto mb-6"></div>
                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Veriler Analiz Ediliyor...</h2>
                         <p className="text-slate-600 dark:text-slate-400">Yorumlar, trafik verileri ve sağlık skoru hesaplanıyor.</p>
                     </div>
@@ -872,7 +872,7 @@ export default function Dashboard() {
                             {/* 3. Harita (Span 4) */}
                             <div className="col-span-1 md:col-span-4 bg-white/80 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-0 border border-slate-300 dark:border-white/10 shadow-xl min-h-[250px] relative overflow-hidden group transition hover:shadow-2xl hover:-translate-y-1">
                                 <h3 className="absolute top-5 left-5 text-slate-900 dark:text-white font-bold mb-4 flex items-center gap-2 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 shadow-lg">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-700"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
                                     Şube Konumu
                                 </h3>
                                 <a 
@@ -895,7 +895,7 @@ export default function Dashboard() {
                                     <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur text-[10px] font-mono px-3 py-1.5 rounded-xl border border-slate-300 dark:border-white/10 text-slate-700 dark:text-slate-300 shadow-lg">
                                         Lat: {data.coords.lat?.toFixed(4)}<br/>Lng: {data.coords.lng?.toFixed(4)}
                                     </div>
-                                    <div className="bg-blue-600 text-white p-2 rounded-xl shadow-lg pointer-events-auto cursor-pointer hover:bg-blue-500 transition">
+                                    <div className="bg-blue-800 text-white p-2 rounded-xl shadow-lg pointer-events-auto cursor-pointer hover:bg-blue-700 transition">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                                     </div>
                                 </div>
@@ -906,7 +906,7 @@ export default function Dashboard() {
                             {/* 4. Trend Analizi (Span 8) */}
                             <div className="col-span-1 md:col-span-8 bg-white/80 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-6 border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:border-white/10 shadow-xl h-[320px] relative flex flex-col transition hover:shadow-2xl">
                                 <h3 className="text-slate-800 dark:text-white font-bold mb-4 flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-700"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                                     Son 1 Yıl Trend Analizi
                                 </h3>
                                 <div className="flex-1 w-full relative -ml-4">
@@ -938,7 +938,7 @@ export default function Dashboard() {
                                 <div className="flex flex-wrap gap-2.5">
                                     {data.trend_keywords && data.trend_keywords.length > 0 ? (
                                         data.trend_keywords.map((kw: any, i: number) => (
-                                            <span key={i} className={`font-extrabold px-4 py-2 rounded-xl border shadow-sm transition hover:scale-105 cursor-default ${kw.sentiment === 'positive' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30' : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30'}`} style={{ fontSize: `${Math.max(0.85, 0.85 + (kw.count * 0.04))}rem` }}>
+                                            <span key={i} className={`font-extrabold px-4 py-2 rounded-xl border shadow-sm transition hover:scale-105 cursor-default ${kw.sentiment === 'positive' ? 'bg-blue-700/10 text-blue-800 dark:text-emerald-400 border-blue-700/30' : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30'}`} style={{ fontSize: `${Math.max(0.85, 0.85 + (kw.count * 0.04))}rem` }}>
                                                 {kw.word} <span className="opacity-60 text-xs ml-1">({kw.count})</span>
                                             </span>
                                         ))
@@ -951,17 +951,17 @@ export default function Dashboard() {
                             {/* === BOTTOM ROW === */}
 
                             {/* 6. AI Aksiyon Planı (Span 4) */}
-                            <div className="col-span-1 md:col-span-4 bg-gradient-to-br from-purple-500/5 to-indigo-500/5 dark:from-purple-900/20 dark:to-indigo-900/20 backdrop-blur-md rounded-3xl p-6 border border-purple-500/20 shadow-xl h-[400px] overflow-y-auto custom-scrollbar relative flex flex-col group transition hover:shadow-2xl">
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-purple-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                            <div className="col-span-1 md:col-span-4 bg-gradient-to-br from-slate-600/5 to-slate-700/5 dark:from-slate-800/20 dark:to-indigo-900/20 backdrop-blur-md rounded-3xl p-6 border border-slate-600/20 shadow-xl h-[400px] overflow-y-auto custom-scrollbar relative flex flex-col group transition hover:shadow-2xl">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-slate-600/10 blur-3xl rounded-full pointer-events-none"></div>
                                 <h3 className="text-slate-900 dark:text-white font-bold mb-5 flex items-center gap-2 relative z-10">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-500 drop-shadow-md"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-600 drop-shadow-md"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
                                     AI Yönetim Planı
                                 </h3>
                                 <ul className="space-y-4 relative z-10">
                                     {data.action_plan && data.action_plan.length > 0 ? (
                                         data.action_plan.map((plan: any, i: number) => (
-                                            <li key={i} className="flex gap-3 items-start bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-white/20 dark:border-slate-700/50 shadow-sm hover:border-purple-500/30 transition">
-                                                <input type="checkbox" className="mt-0.5 w-5 h-5 accent-purple-600 rounded-md cursor-pointer shrink-0" />
+                                            <li key={i} className="flex gap-3 items-start bg-white/50 dark:bg-slate-900/50 p-4 rounded-xl border border-white/20 dark:border-slate-700/50 shadow-sm hover:border-slate-600/30 transition">
+                                                <input type="checkbox" className="mt-0.5 w-5 h-5 accent-slate-700 rounded-md cursor-pointer shrink-0" />
                                                 <span className="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed">{plan.task}</span>
                                             </li>
                                         ))
@@ -982,7 +982,7 @@ export default function Dashboard() {
                                     </div>
                                     <button 
                                         onClick={() => setIsReviewsModalOpen(true)}
-                                        className="text-xs text-white font-bold bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-md"
+                                        className="text-xs text-white font-bold bg-blue-800 hover:bg-blue-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-md"
                                     >
                                         Tümünü Gör
                                     </button>
@@ -991,7 +991,7 @@ export default function Dashboard() {
                                 <div className="space-y-4">
                                     {data.reviews && data.reviews.length > 0 ? (
                                         data.reviews.map((review: any, idx: number) => (
-                                            <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 transition hover:border-blue-500/30">
+                                            <div key={idx} className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 transition hover:border-blue-700/30">
                                                 <div className="flex justify-between items-start mb-2">
                                                     <span className="text-sm font-bold text-slate-900 dark:text-white truncate pr-2">{review.author_name}</span>
                                                     <span className="text-[10px] font-medium text-slate-500 shrink-0">{review.relative_time_description}</span>
@@ -1001,13 +1001,13 @@ export default function Dashboard() {
                                                         <svg key={i} xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill={i < (review.rating || 0) ? "#fbbf24" : "#475569"} stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
                                                     ))}
                                                     {review.ai_categories && review.ai_categories.map((cat: string, ci: number) => (
-                                                        <span key={ci} className="ml-2 text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">{cat}</span>
+                                                        <span key={ci} className="ml-2 text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-blue-700/10 text-blue-800 dark:text-blue-600 border border-blue-700/20">{cat}</span>
                                                     ))}
                                                 </div>
                                                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic mb-3 line-clamp-3">
                                                     "{review.text}"
                                                 </p>
-                                                <button onClick={() => setAiResponseModal({isOpen: true, review, responseText: generateAiResponse(review)})} className="text-[10px] bg-indigo-500/10 text-indigo-700 hover:bg-indigo-500/20 dark:text-indigo-400 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 border border-indigo-500/20">
+                                                <button onClick={() => setAiResponseModal({isOpen: true, review, responseText: generateAiResponse(review)})} className="text-[10px] bg-slate-700/10 text-indigo-700 hover:bg-slate-700/20 dark:text-indigo-400 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 border border-slate-700/20">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                                                     AI Yanıtla
                                                 </button>
@@ -1022,11 +1022,11 @@ export default function Dashboard() {
                             </div>
 
                             {/* 8. İletilen Loglar (Span 4) */}
-                            <div className="col-span-1 md:col-span-4 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 dark:from-emerald-900/20 dark:to-teal-900/20 backdrop-blur-md rounded-3xl p-6 border border-emerald-500/20 shadow-xl h-[400px] flex flex-col relative overflow-hidden group transition hover:shadow-2xl">
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none"></div>
+                            <div className="col-span-1 md:col-span-4 bg-gradient-to-br from-blue-700/5 to-teal-500/5 dark:from-emerald-900/20 dark:to-teal-900/20 backdrop-blur-md rounded-3xl p-6 border border-blue-700/20 shadow-xl h-[400px] flex flex-col relative overflow-hidden group transition hover:shadow-2xl">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-blue-700/10 blur-3xl rounded-full pointer-events-none"></div>
                                 <div className="flex justify-between items-center mb-5 z-10 relative">
                                     <h3 className="text-slate-900 dark:text-white font-bold flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500 drop-shadow-md"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-700 drop-shadow-md"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                         İletilen Rapor Logları
                                     </h3>
                                 </div>
@@ -1034,9 +1034,9 @@ export default function Dashboard() {
                                 <div className="flex-1 w-full relative rounded-2xl overflow-y-auto border border-white/20 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 p-5 space-y-4 custom-scrollbar z-10">
                                     {sentLogs.filter(log => log.branch_name === data.branch_name).length > 0 ? (
                                         sentLogs.filter(log => log.branch_name === data.branch_name).map((log, i) => (
-                                            <div key={i} className="border-l-4 border-emerald-500 pl-4 py-1">
+                                            <div key={i} className="border-l-4 border-blue-700 pl-4 py-1">
                                                 <div className="flex justify-between items-start mb-1.5">
-                                                    <span className="text-xs font-extrabold text-slate-900 dark:text-white bg-emerald-500/10 px-2 py-0.5 rounded text-emerald-700 dark:text-emerald-400">{log.type} İletisi</span>
+                                                    <span className="text-xs font-extrabold text-slate-900 dark:text-white bg-blue-700/10 px-2 py-0.5 rounded text-emerald-700 dark:text-emerald-400">{log.type} İletisi</span>
                                                     <span className="text-[10px] font-mono text-slate-500">{log.date}</span>
                                                 </div>
                                                 <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{log.message}</p>
@@ -1104,7 +1104,7 @@ export default function Dashboard() {
                     <div className="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
                         <div className="flex justify-between items-center p-5 border-b border-slate-800 bg-slate-100/50 dark:bg-slate-900/50">
                             <h2 className="text-xl font-bold flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-800 dark:text-blue-600"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                                 Son 5 Müşteri Yorumu ({data?.branch_name})
                             </h2>
                             <button onClick={() => setIsReviewsModalOpen(false)} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white transition bg-white dark:bg-slate-800 hover:bg-slate-200 dark:bg-slate-700 p-2 rounded-lg">✕</button>
@@ -1134,7 +1134,7 @@ export default function Dashboard() {
                                         {review.ai_categories && review.ai_categories.length > 0 && (
                                             <div className="flex gap-2 mb-3">
                                                 {review.ai_categories.map((cat: string, ci: number) => (
-                                                    <span key={ci} className="text-[10px] font-bold uppercase px-2 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">{cat}</span>
+                                                    <span key={ci} className="text-[10px] font-bold uppercase px-2 py-1 rounded-md bg-blue-700/10 text-blue-800 dark:text-blue-600 border border-blue-700/20">{cat}</span>
                                                 ))}
                                             </div>
                                         )}
