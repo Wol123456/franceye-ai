@@ -9,61 +9,64 @@ const config: Config = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Space Grotesk"', 'sans-serif'],
-                mono: ['"JetBrains Mono"', 'monospace'],
+                sans: ['Calibri', 'sans-serif'],
+                mono: ['monospace'],
             },
             colors: {
                 slate: {
-                    50: '#F4F5F7',
-                    100: '#E4E7EC',
-                    200: '#CBD0D9',
-                    300: '#A1A9B8',
-                    400: '#758094',
-                    500: '#545E71',
-                    600: '#3D465A',
-                    700: '#2A3141',
-                    800: '#1B202B', // Dark Cards
-                    900: '#11151C', // Deeper Dark Cards
-                    950: '#090A0E', // True Tech Background
+                    50: '#F9FAFB',
+                    100: '#F3F4F6',
+                    200: '#E5E7EB',
+                    300: '#D1D5DB',
+                    400: '#9CA3AF',
+                    500: '#6B7280',
+                    600: '#4B5563',
+                    700: '#374151',
+                    800: '#1F2937', 
+                    900: '#111827', 
+                    950: '#030712',
                 },
                 blue: {
-                    50: '#E6F0FF',
-                    100: '#CCE0FF',
-                    200: '#99C2FF',
-                    300: '#66A3FF',
-                    400: '#3385FF',
-                    500: '#0066FF', // Pure Electric Blue
-                    600: '#0052CC',
-                    700: '#003D99',
-                    800: '#002966',
-                    900: '#001433',
-                    950: '#000A1A',
-                },
-                emerald: {
-                    50: '#E6FFF5',
-                    100: '#CCFFEA',
-                    200: '#99FFD5',
-                    300: '#66FFC0',
-                    400: '#33FFAA',
-                    500: '#00FF95', // Matrix Neon Green
-                    600: '#00CC77',
-                    700: '#009959',
-                    800: '#00663C',
-                    900: '#00331E',
-                    950: '#001A0F',
+                    // Navy Blue (Lacivert) Scale
+                    50: '#E6EAF2',
+                    100: '#CDD6E5',
+                    200: '#9AB0CB',
+                    300: '#6889B2',
+                    400: '#356398',
+                    500: '#023E7D', // Main Navy
+                    600: '#023264',
+                    700: '#01254B',
+                    800: '#011932',
+                    900: '#000C19',
+                    950: '#00060C',
                 },
                 purple: {
-                    50: '#F5E6FF',
-                    100: '#EACCFF',
-                    200: '#D599FF',
-                    300: '#BF66FF',
-                    400: '#AA33FF',
-                    500: '#9500FF', // Neon Violet
-                    600: '#7700CC',
-                    700: '#590099',
-                    800: '#3C0066',
-                    900: '#1E0033',
-                    950: '#0F001A',
+                    // Mute the purples to a grayish blue to fit the corporate theme
+                    50: '#F0F4F8',
+                    100: '#E1E9F1',
+                    200: '#C4D3E3',
+                    300: '#A6BDD5',
+                    400: '#89A8C7',
+                    500: '#6B92B9', 
+                    600: '#567594',
+                    700: '#40586F',
+                    800: '#2B3B4A',
+                    900: '#151D25',
+                    950: '#0B0F13',
+                },
+                emerald: {
+                    // Mute emerald to a very calm corporate green for success states
+                    50: '#EBF2ED',
+                    100: '#D7E6DB',
+                    200: '#AFCCB7',
+                    300: '#87B393',
+                    400: '#5F996F',
+                    500: '#37804B', 
+                    600: '#2C663C',
+                    700: '#214D2D',
+                    800: '#16331E',
+                    900: '#0B1A0F',
+                    950: '#050D08',
                 }
             }
         },
