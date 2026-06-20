@@ -7,8 +7,22 @@ interface AeoModuleProps {
 export default function AeoModule({ data }: AeoModuleProps) {
     const [activeTab, setActiveTab] = useState('score');
     
+    if (!data) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] text-center animate-fade-in">
+                <div className="w-24 h-24 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-6">
+                    <span className="text-5xl">🧠</span>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Yapay Zeka Görünürlüğü (AEO)</h2>
+                <p className="text-slate-500 dark:text-slate-400 max-w-md">
+                    Şubenizin yapay zeka motorlarında nasıl performans gösterdiğini görmek için lütfen listeden bir şube seçin.
+                </p>
+            </div>
+        );
+    }
+
     // Fake AEO data generation based on branch health
-    const aeoScore = Math.min(98, Math.round((data.health_score * 0.8) + (data.metrics.google_reviews > 500 ? 15 : 5)));
+    const aeoScore = Math.min(98, Math.round(((data.health_score || 0) * 0.8) + ((data.metrics?.google_reviews || 0) > 500 ? 15 : 5)));
     const targetKeywords = data.trend_keywords?.slice(0, 4) || [{word: 'Temiz', count: 12}, {word: 'Hızlı', count: 8}, {word: 'Kahve', count: 24}];
     const consistencyScore = 85;
 
