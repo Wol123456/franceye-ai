@@ -199,7 +199,7 @@ export default function DirectoryModule({
                             </div>
 
                             {isBranchManagerFormOpen && (
-                                <div className="bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-900/50 rounded-xl p-5 shadow-lg relative overflow-hidden">
+                                <div className="bg-white dark:bg-slate-800 border border-blue-700 dark:border-blue-700/50 rounded-xl p-5 shadow-lg relative overflow-hidden">
                                     <div className="absolute top-0 left-0 w-1 h-full bg-blue-700"></div>
                                     <h4 className="font-bold mb-4 text-slate-800 dark:text-white">{editingBranchId ? 'Şube Yöneticisi Düzenle' : 'Yeni Şube Yöneticisi Ekle'}</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -210,19 +210,19 @@ export default function DirectoryModule({
                                     </div>
                                     <div className="flex justify-end gap-3 mt-5">
                                         <button onClick={() => setIsBranchManagerFormOpen(false)} className="px-5 py-2 text-sm text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">İptal</button>
-                                        <button onClick={handleSaveBranchManager} className="bg-blue-800 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg text-sm font-semibold shadow-md">{editingBranchId ? 'Güncelle' : 'Kaydet'}</button>
+                                        <button onClick={handleSaveBranchManager} className="bg-blue-800 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold shadow-md">{editingBranchId ? 'Güncelle' : 'Kaydet'}</button>
                                     </div>
                                 </div>
                             )}
 
                             <div className="space-y-3">
                                 {displayList.map((branch: any, i: number) => (
-                                    <div key={branch.place_id || i} className={`flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white dark:bg-slate-800 border ${branch.isSaved ? 'border-emerald-200 dark:border-blue-900' : 'border-slate-200 dark:border-slate-700'} rounded-xl hover:shadow-md transition gap-4`}>
+                                    <div key={branch.place_id || i} className={`flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white dark:bg-slate-800 border ${branch.isSaved ? 'border-blue-700 dark:border-blue-900' : 'border-slate-200 dark:border-slate-700'} rounded-xl hover:shadow-md transition gap-4`}>
                                         <div className="flex items-center gap-4">
                                             {branch.photo ? (
-                                                <img src={branch.photo} alt={branch.manager_name} className="w-12 h-12 rounded-full object-cover border-2 border-emerald-200 dark:border-emerald-900" />
+                                                <img src={branch.photo} alt={branch.manager_name} className="w-12 h-12 rounded-full object-cover border-2 border-blue-700 dark:border-blue-700" />
                                             ) : (
-                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${branch.isSaved ? 'bg-slate-100 dark:bg-emerald-900/30 text-blue-800 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}`}>
+                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${branch.isSaved ? 'bg-slate-100 dark:bg-blue-700/30 text-blue-800 dark:text-blue-700' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}`}>
                                                     {branch.manager_name ? branch.manager_name.charAt(0) : '?'}
                                                 </div>
                                             )}
@@ -230,7 +230,7 @@ export default function DirectoryModule({
                                                 <div className="font-bold text-slate-800 dark:text-white">
                                                     {branch.manager_name || 'İsimsiz Yönetici'}
                                                 </div>
-                                                <div className="text-xs font-semibold text-blue-800 dark:text-emerald-400 mt-0.5">
+                                                <div className="text-xs font-semibold text-blue-800 dark:text-blue-700 mt-0.5">
                                                     {branch.branch_name || branch.name}
                                                 </div>
                                                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -251,7 +251,7 @@ export default function DirectoryModule({
                                                     setEditingBranchId(branch.place_id);
                                                     setIsBranchManagerFormOpen(true);
                                                 }}
-                                                className="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-blue-800 dark:text-emerald-400 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-600"
+                                                className="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-blue-800 dark:text-blue-700 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-600"
                                             >
                                                 {branch.isSaved ? 'Düzenle' : 'Rehbere Ekle'}
                                             </button>

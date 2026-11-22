@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar';
 import DirectoryModule from '../components/DirectoryModule';
 import AeoModule from '../components/AeoModule';
 import CompetitorModule from '../components/CompetitorModule';
+import LandingPage from '../components/LandingPage';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 // --- Constants ---
@@ -23,6 +24,14 @@ const getMockUnread = (branch: any) => {
 };
 
 export default function Dashboard() {
+    // Mode State (Landing Page vs Demo Environment)
+    const [currentMode, setCurrentMode] = useState<'landing' | 'demo'>('landing');
+
+    // Demo Limitations State (Max 3 brands)
+    const [searchedBrands, setSearchedBrands] = useState<string[]>([]);
+    const [enterpriseModalOpen, setEnterpriseModalOpen] = useState(false);
+    const [enterpriseModalReason, setEnterpriseModalReason] = useState('');
+
     // Theme State
     const [isDarkMode, setIsDarkMode] = useState(true);
 
@@ -181,10 +190,26 @@ export default function Dashboard() {
     // --- Actions ---
 
     const searchBranches = async () => {
+        if (!branchName.trim()) {
+            alert("Lütfen bir marka adı giriniz.");
+            return;
+        }
         if (!selectedCity) {
             alert("Lütfen önce bir şehir seçiniz.");
             return;
         }
+
+        // Demo Limitation: Max 3 unique brands
+        const cleanBrand = branchName.trim().toLowerCase();
+        if (!searchedBrands.includes(cleanBrand)) {
+            if (searchedBrands.length >= 3) {
+                setEnterpriseModalReason("Demo Sürümü Sınırı: Demo ortamında en fazla 3 marka incelemesi yapılabilir. Tüm şubelerinizi ve sınırsız markayı analiz etmek için Kurumsal Pakete geçin.");
+                setEnterpriseModalOpen(true);
+                return;
+            }
+            setSearchedBrands(prev => [...prev, cleanBrand]);
+        }
+
         setLoading(true);
         try {
             // "şubeleri" ekleyerek Google'ın sadece genel merkezi değil, tüm bayileri/şubeleri getirmesini sağlıyoruz.
@@ -392,9 +417,61 @@ export default function Dashboard() {
         return () => clearInterval(interval);
     }, [branches, selectedCity, view]);
 
+    if (currentMode === 'landing') {
+        return (
+            <div className={isDarkMode ? 'dark' : ''}>
+                <LandingPage 
+                    onLaunchDemo={() => setCurrentMode('demo')}
+                    isDarkMode={isDarkMode}
+                    setIsDarkMode={setIsDarkMode}
+                />
+            </div>
+        );
+    }
+
     return (
         <div className={isDarkMode ? 'dark' : ''}>
-            <div className="flex h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans selection:bg-blue-700/30 overflow-hidden relative">
+            {/* Top Enterprise Demo Status Banner */}
+            <div className="flex items-center justify-between px-5 py-2.5 border-b z-30 relative select-none" style={{ background: 'var(--fe-navy-dark)', color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.1)' }}>
+                <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-md bg-blue-500 text-white font-black text-xs flex items-center justify-center">FE</div>
+                    <div className="flex items-center gap-2">
+                        <span className="font-bold text-xs tracking-tight">FrancEye AI Kurumsal Demo v2.4</span>
+                        <span className="hidden sm:inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span className="hidden sm:inline-block text-[11px] text-slate-300">Canlı Google Places & AI Radarı Aktif</span>
+                    </div>
+                </div>
+                
+                <div className="flex items-center gap-3 text-xs">
+                    <div className="hidden md:flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-[11px]">
+                        <span>Marka Kotası:</span>
+                        <strong className="text-blue-300">{searchedBrands.length} / 3</strong>
+                        <span className="text-slate-400">·</span>
+                        <span>İl Sıralama Limiti:</span>
+                        <strong className="text-blue-300">İlk 3 Şube</strong>
+                    </div>
+
+                    <button 
+                        onClick={() => setCurrentMode('landing')}
+                        className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 transition text-white border border-white/15"
+                    >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                        <span>Ürün Tanıtımına Dön</span>
+                    </button>
+
+                    <button 
+                        onClick={() => {
+                            setEnterpriseModalReason("Franchise ağınız için sınırsız marka, 81 il şube ağı ve özel entegrasyon teklifi alın.");
+                            setEnterpriseModalOpen(true);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1 rounded-lg text-xs transition shadow-sm"
+                    >
+                        Kurumsal Lisans Al
+                    </button>
+                </div>
+            </div>
+
+            <div className="flex h-[calc(100vh-41px)] bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-sans selection:bg-blue-700/30 overflow-hidden relative">
                 
                 {/* Mobile Sidebar Overlay */}
                 {isSidebarOpen && (
@@ -412,6 +489,7 @@ export default function Dashboard() {
                         setIsDarkMode={setIsDarkMode}
                         setView={(v) => { setView(v); setIsSidebarOpen(false); }}
                         onDirectoryClick={() => { setActiveModule('directory'); fetchAllPhones(); fetchAdmins(); setIsSidebarOpen(false); }}
+                        onExitDemo={() => setCurrentMode('landing')}
                     />
                 </div>
                 <main className="flex-1 overflow-y-auto relative w-full">
@@ -525,8 +603,33 @@ export default function Dashboard() {
 
 
                 {/* --- SEARCH BAR (Always Visible) --- */}
-                <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl p-1 border border-slate-300 dark:border-white/10 shadow-2xl z-20 relative">
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
+                <div className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-300 dark:border-white/10 shadow-2xl z-20 relative overflow-hidden">
+                    {/* Demo Quota Banner */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 py-2.5 bg-blue-500/10 border-b border-blue-500/20 text-xs gap-2">
+                        <div className="flex items-center gap-2">
+                            <span className="fe-badge fe-badge-navy font-bold">DEMO MODU</span>
+                            <span className="text-slate-700 dark:text-slate-300">
+                                Marka Kotası: <strong className="text-blue-600 dark:text-blue-400">{searchedBrands.length} / 3</strong> Kullanıldı
+                            </span>
+                            {searchedBrands.length > 0 && (
+                                <span className="text-[11px] text-slate-500 hidden md:inline">({searchedBrands.join(', ')})</span>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="text-[11px] text-slate-500">İl Sıralaması: İlk 3 Şube</span>
+                            <button 
+                                onClick={() => {
+                                    setEnterpriseModalReason("Kurumsal lisans ile sınırsız marka, 81 il şube ağı ve kesintisiz yapay zeka denetimine geçebilirsiniz.");
+                                    setEnterpriseModalOpen(true);
+                                }}
+                                className="text-blue-600 dark:text-blue-400 font-bold hover:underline text-[11px] flex items-center gap-1"
+                            >
+                                <span>Kurumsal Pakete Geç</span> 🔒
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="p-2 grid grid-cols-1 md:grid-cols-12 gap-2">
                         {/* Brand Input */}
                         <div className="md:col-span-5 p-2">
                             <label className="text-xs text-slate-600 dark:text-slate-400 ml-1 mb-1 block font-semibold uppercase tracking-wider">Marka Adı</label>
@@ -534,7 +637,7 @@ export default function Dashboard() {
                                 type="text"
                                 value={branchName}
                                 onChange={(e) => setBranchName(e.target.value)}
-                                placeholder="Örn: Kahve Dünyası"
+                                placeholder="Örn: Markanız"
                                 className="w-full bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700/50 transition text-slate-900 dark:text-white"
                             />
                         </div>
@@ -640,7 +743,41 @@ export default function Dashboard() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {filteredBranches.map((branch) => {
+                            {filteredBranches.map((branch, idx) => {
+                                const isLockedInDemo = idx >= 3;
+                                if (isLockedInDemo) {
+                                    return (
+                                        <div 
+                                            key={branch.place_id || idx} 
+                                            className="bg-white/40 dark:bg-slate-800/20 border border-dashed border-slate-300 dark:border-slate-700/60 p-6 rounded-2xl flex flex-col justify-between relative opacity-75 backdrop-blur-sm"
+                                        >
+                                            <div className="absolute top-0 left-0 bg-slate-600 text-white font-bold px-3 py-0.5 rounded-tl-2xl rounded-br-2xl text-xs">
+                                                #{idx + 1}
+                                            </div>
+                                            <div className="pt-4 space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-bold text-lg text-slate-500 blur-[3px] select-none">{branch.name}</span>
+                                                    <span className="fe-badge fe-badge-navy text-[10px]">🔒 Demo Kilitli</span>
+                                                </div>
+                                                <p className="text-xs text-slate-400 blur-[3px] select-none line-clamp-2">{branch.address}</p>
+                                            </div>
+                                            <div className="mt-5 pt-3 border-t border-slate-200 dark:border-slate-700/40 text-xs space-y-2.5">
+                                                <div className="text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                                                    Demo sürümünde il bazında ilk 3 şube sıralanır.
+                                                </div>
+                                                <button 
+                                                    onClick={() => {
+                                                        setEnterpriseModalReason("Demo sürümünde il bazında ilk 3 şube aktif sıralanmaktadır. Kalan şubelerin detaylı analizini ve 81 il kapsamını görmek için Kurumsal Pakete geçin.");
+                                                        setEnterpriseModalOpen(true);
+                                                    }} 
+                                                    className="w-full py-2 bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700"
+                                                >
+                                                    <span>Şube Analizini Aç</span> 🔒
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                }
                                 const unread = getMockUnread(branch);
                                 return (
                                 <div key={branch.place_id} className="bg-white/80 dark:bg-slate-800/40 border border-slate-200 dark:border-white/5 hover:border-blue-700/50 p-6 rounded-2xl transition hover:bg-slate-50/60 dark:bg-slate-800/60 group cursor-pointer relative" onClick={() => analyzeBranch(branch)}>
@@ -688,6 +825,25 @@ export default function Dashboard() {
                                 </div>
                             )})}
                         </div>
+
+                        {/* Enterprise unlock banner if more than 3 branches found */}
+                        {filteredBranches.length > 3 && (
+                            <div className="p-4 rounded-2xl border border-blue-500/20 bg-blue-500/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs mt-4">
+                                <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
+                                    <span className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center font-bold text-base">🔒</span>
+                                    <span>Bu ilde toplam <strong>{filteredBranches.length}</strong> şube tespit edildi. Demo modunda ilk 3 şube sıralanmaktadır. Kalan <strong>{filteredBranches.length - 3}</strong> şubenin ve 81 il genelinin tam analizi için Kurumsal Pakete geçin.</span>
+                                </div>
+                                <button 
+                                    onClick={() => {
+                                        setEnterpriseModalReason("Demo sürümünde il bazında ilk 3 şube sıralanmaktadır. Tüm şubelerinizi kesintisiz analiz etmek için Kurumsal Lisansa geçin.");
+                                        setEnterpriseModalOpen(true);
+                                    }} 
+                                    className="px-5 py-2.5 rounded-xl font-bold bg-blue-600 hover:bg-blue-500 text-white whitespace-nowrap shadow-md shadow-blue-600/20 transition active:scale-95"
+                                >
+                                    Tüm Şubeleri Aç
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -1147,6 +1303,60 @@ export default function Dashboard() {
                             ) : (
                                 <div className="text-center py-10 text-slate-500">Henüz yorum bulunmuyor.</div>
                             )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* --- ENTERPRISE UPGRADE MODAL --- */}
+            {enterpriseModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
+                        <div className="flex justify-between items-start">
+                            <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center font-black text-2xl">
+                                👑
+                            </div>
+                            <button onClick={() => setEnterpriseModalOpen(false)} className="text-slate-400 hover:text-slate-600 font-bold text-lg">✕</button>
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Kurumsal Sürüme Geçin</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+                                {enterpriseModalReason || "Demo sürümünde belirli kota ve limitler uygulanmaktadır. Tüm şubelerinizi sınırsız yönetmek için Kurumsal Pakete geçin."}
+                            </p>
+                        </div>
+
+                        <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 text-xs">
+                            <div className="font-bold text-slate-800 dark:text-slate-200">Kurumsal Lisans Avantajları:</div>
+                            <ul className="space-y-1.5 text-slate-600 dark:text-slate-400">
+                                <li className="flex items-center gap-1.5">✓ Sınırsız Marka ve Tüm Şube Taraması</li>
+                                <li className="flex items-center gap-1.5">✓ 81 İl Boyunca Tam Şube Sıralaması</li>
+                                <li className="flex items-center gap-1.5">✓ Çoklu Rakip Karşılaştırma</li>
+                                <li className="flex items-center gap-1.5">✓ Otomatik WhatsApp & E-posta Alarmları</li>
+                            </ul>
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                            <button 
+                                onClick={() => {
+                                    setEnterpriseModalOpen(false);
+                                    setSearchedBrands([]);
+                                }}
+                                className="fe-btn-ghost text-xs py-2.5 flex-1 text-center font-bold"
+                            >
+                                Demoyu Sıfırla
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    setEnterpriseModalOpen(false);
+                                    setCurrentMode('landing');
+                                    setTimeout(() => {
+                                        const el = document.getElementById('pricing');
+                                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                    }, 100);
+                                }}
+                                className="fe-btn-primary text-xs py-2.5 flex-1 text-center font-bold"
+                            >
+                                Paketleri İncele
+                            </button>
                         </div>
                     </div>
                 </div>

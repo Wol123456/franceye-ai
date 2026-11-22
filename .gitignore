@@ -48,6 +48,9 @@ playwright/.cache/
 # Antigravity Specific
 .antigravityignore
 *.log
+patch_*.py
+erp-agent/
+local_db.json
 # Ignore json files but exclude specific ones
 *.json
 !package.json

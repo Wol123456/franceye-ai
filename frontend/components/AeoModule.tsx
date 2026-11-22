@@ -1,249 +1,283 @@
+'use client';
 import React, { useState } from 'react';
 
-interface AeoModuleProps {
-    data: any;
-}
+interface AeoModuleProps { data: any; }
+
+const Tab = ({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) => (
+    <button
+        onClick={onClick}
+        className="px-4 py-2 text-[13px] font-semibold rounded-md transition-all whitespace-nowrap"
+        style={{
+            background: active ? 'var(--fe-navy)' : 'transparent',
+            color: active ? '#fff' : 'var(--fe-text-muted)',
+        }}
+    >
+        {label}
+    </button>
+);
+
+const ProgressBar = ({ value, color = 'var(--fe-navy)' }: { value: number; color?: string }) => (
+    <div className="w-full h-1.5 rounded-full" style={{ background: 'var(--fe-border)' }}>
+        <div className="h-full rounded-full transition-all" style={{ width: `${value}%`, background: color }} />
+    </div>
+);
 
 export default function AeoModule({ data }: AeoModuleProps) {
     const [activeTab, setActiveTab] = useState('score');
-    const [customKeywords, setCustomKeywords] = useState<Array<{word: string, count: number, target: number}>>([]);
-    
+    const [customKeywords, setCustomKeywords] = useState<{ word: string; count: number; target: number }[]>([]);
+    const [newKw, setNewKw] = useState('');
+    const [showKwInput, setShowKwInput] = useState(false);
+
     if (!data) {
         return (
             <div className="flex flex-col items-center justify-center h-[60vh] text-center animate-fade-in">
-                <div className="w-24 h-24 rounded-full bg-slate-200 dark:bg-slate-800/30 flex items-center justify-center mb-6">
-                    <span className="text-5xl">🧠</span>
+                <div className="w-16 h-16 rounded-2xl fe-card flex items-center justify-center mb-4">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ color: 'var(--fe-navy)' }}>
+                        <path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6L14 18H10l-1.7-3C6.3 13.7 5 11.5 5 9a7 7 0 0 1 7-7z"/>
+                        <path d="M10 22h4"/><path d="M12 18v4"/>
+                    </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Yapay Zeka Görünürlüğü (AEO)</h2>
-                <p className="text-slate-500 dark:text-slate-400 max-w-md">
-                    Şubenizin yapay zeka motorlarında nasıl performans gösterdiğini görmek için lütfen listeden bir şube seçin.
+                <h2 className="fe-section-title mb-1">Yapay Zeka Görünürlüğü (AEO)</h2>
+                <p style={{ color: 'var(--fe-text-muted)' }} className="max-w-sm text-sm">
+                    Bu modülü görmek için sol panelden bir şube seçin ve analiz edin.
                 </p>
             </div>
         );
     }
 
-    // Fake AEO data generation based on branch health
     const aeoScore = Math.min(98, Math.round(((data.health_score || 0) * 0.8) + ((data.metrics?.google_reviews || 0) > 500 ? 15 : 5)));
-    const targetKeywords = data.trend_keywords?.slice(0, 4) || [{word: 'Temiz', count: 12}, {word: 'Hızlı', count: 8}, {word: 'Kahve', count: 24}];
-    const consistencyScore = 85;
+    const targetKeywords = data.trend_keywords?.slice(0, 4) || [{ word: 'Temiz', count: 12 }, { word: 'Hızlı', count: 8 }];
 
     const handleAddKeyword = () => {
-        const word = window.prompt('Yapay zeka için hedeflemek istediğiniz yeni anahtar kelimeyi yazın (Örn: Bebek Dostu):');
-        if (word && word.trim()) {
-            setCustomKeywords([...customKeywords, { word: word.trim(), count: 0, target: 50 }]);
+        if (newKw.trim()) {
+            setCustomKeywords([...customKeywords, { word: newKw.trim(), count: 0, target: 50 }]);
+            setNewKw('');
+            setShowKwInput(false);
         }
     };
 
+    const scoreColor = aeoScore >= 80 ? '#16A34A' : aeoScore >= 60 ? '#D97706' : '#DC2626';
+    const scoreLabel = aeoScore >= 80 ? 'Mükemmel' : aeoScore >= 60 ? 'Orta' : 'Düşük';
+
+    const TABS = [
+        { key: 'score', label: 'AEO Skoru' },
+        { key: 'simulator', label: 'LLM Simülatörü' },
+        { key: 'keywords', label: 'Hedef Kelimeler' },
+        { key: 'data', label: 'Veri Tutarlılığı' },
+    ];
+
     return (
-        <div className="animate-fade-in relative max-w-7xl mx-auto p-6 md:p-10 pt-6 space-y-8">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10 bg-slate-800/5 dark:bg-slate-800/20 p-6 rounded-3xl backdrop-blur-md border border-slate-600/20 shadow-lg">
+        <div className="animate-fade-in p-6 space-y-5">
+            {/* Page Header */}
+            <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center gap-3">
-                        <span className="text-slate-700 dark:text-purple-400">🧠</span> Yapay Zeka Optimizasyonu (AEO)
-                    </h2>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 font-medium">
-                        {data.branch_name} şubesinin ChatGPT, Claude ve Gemini gibi motorlarda önerilme ihtimali.
+                    <h1 className="fe-page-title">Yapay Zeka Optimizasyonu (AEO)</h1>
+                    <p className="text-sm mt-0.5" style={{ color: 'var(--fe-text-muted)' }}>
+                        {data.branch_name} · ChatGPT, Claude ve Gemini'de önerilme ihtimali
                     </p>
                 </div>
+                <span className="fe-badge fe-badge-navy text-[12px] px-3 py-1">Beta</span>
             </div>
 
-            {/* Tabs */}
-            <div className="flex space-x-2 bg-white/50 dark:bg-slate-800/50 p-2 rounded-2xl backdrop-blur-sm border border-slate-200 dark:border-white/5 overflow-x-auto custom-scrollbar relative z-10">
-                <button onClick={() => setActiveTab('score')} className={`px-5 py-2.5 rounded-xl font-bold transition whitespace-nowrap ${activeTab === 'score' ? 'bg-slate-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>AEO Skoru</button>
-                <button onClick={() => setActiveTab('simulator')} className={`px-5 py-2.5 rounded-xl font-bold transition whitespace-nowrap ${activeTab === 'simulator' ? 'bg-blue-800 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>🤖 LLM Simülatörü</button>
-                <button onClick={() => setActiveTab('keywords')} className={`px-5 py-2.5 rounded-xl font-bold transition whitespace-nowrap ${activeTab === 'keywords' ? 'bg-blue-800 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>Hedef Kelimeler</button>
-                <button onClick={() => setActiveTab('data')} className={`px-5 py-2.5 rounded-xl font-bold transition whitespace-nowrap ${activeTab === 'data' ? 'bg-slate-700 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}>Veri Tutarlılığı</button>
+            {/* Tab Bar */}
+            <div className="fe-card p-1 flex gap-0.5 overflow-x-auto w-fit">
+                {TABS.map(t => <Tab key={t.key} label={t.label} active={activeTab === t.key} onClick={() => setActiveTab(t.key)} />)}
             </div>
 
-            {/* Content Area */}
-            <div className="relative z-10">
-                
-                {/* TAB 1: AEO SCORE */}
-                {activeTab === 'score' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-                        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-8 rounded-3xl border border-slate-200 dark:border-white/10 shadow-xl flex flex-col items-center justify-center text-center relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-slate-600 to-slate-700"></div>
-                            <div className="w-48 h-48 rounded-full border-[16px] border-slate-100 dark:border-slate-700 flex items-center justify-center relative shadow-inner mb-6">
-                                <svg className="absolute inset-0 w-full h-full transform -rotate-90">
-                                    <circle cx="50%" cy="50%" r="42%" fill="none" stroke="currentColor" strokeWidth="16" className="text-slate-600" strokeDasharray={`${aeoScore * 2.64} 1000`} />
-                                </svg>
-                                <div className="text-5xl font-black text-slate-900 dark:text-white drop-shadow-md">%{aeoScore}</div>
+            {/* ── TAB: SCORE ── */}
+            {activeTab === 'score' && (
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-5 animate-fade-in">
+                    {/* Score Gauge */}
+                    <div className="md:col-span-2 fe-card p-6 flex flex-col items-center justify-center text-center">
+                        <div className="relative w-36 h-36 mb-4">
+                            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                                <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--fe-border)" strokeWidth="3" />
+                                <circle
+                                    cx="18" cy="18" r="15.9" fill="none"
+                                    stroke={scoreColor} strokeWidth="3"
+                                    strokeDasharray={`${aeoScore} 100`}
+                                    strokeLinecap="round"
+                                    style={{ transition: 'stroke-dasharray 1s ease' }}
+                                />
+                            </svg>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <span className="text-3xl font-black" style={{ color: scoreColor }}>{aeoScore}</span>
+                                <span className="text-[11px] font-semibold" style={{ color: 'var(--fe-text-muted)' }}>/ 100</span>
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Görünürlük Seviyesi: {aeoScore > 80 ? 'Mükemmel' : 'Geliştirilebilir'}</h3>
-                            <p className="text-sm text-slate-500 mt-2">Bu skor, mekanınızın arama motorları yerine yapay zeka tarafından kullanıcılara önerilme ihtimalini gösterir.</p>
                         </div>
+                        <div className="font-bold text-base">{scoreLabel} Görünürlük</div>
+                        <p className="text-xs mt-1" style={{ color: 'var(--fe-text-muted)' }}>
+                            Yapay zeka motorlarında önerilme puanı
+                        </p>
+                    </div>
 
-                        <div className="space-y-6">
-                            <div className="bg-white/80 dark:bg-slate-800/80 p-6 rounded-3xl border border-slate-200 dark:border-white/10 shadow-xl">
-                                <h4 className="font-bold text-slate-800 dark:text-white mb-4">Etki Eden Faktörler</h4>
-                                <div className="space-y-4">
-                                    <div>
-                                        <div className="flex justify-between text-sm font-medium mb-1"><span className="text-slate-700 dark:text-slate-300">Yorum Hacmi & Güncellik</span><span className="text-blue-700">%90</span></div>
-                                        <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full"><div className="h-full bg-blue-700 rounded-full" style={{width: '90%'}}></div></div>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between text-sm font-medium mb-1"><span className="text-slate-700 dark:text-slate-300">Spesifik Anahtar Kelime Yoğunluğu</span><span className="text-yellow-500">%65</span></div>
-                                        <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full"><div className="h-full bg-yellow-500 rounded-full" style={{width: '65%'}}></div></div>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between text-sm font-medium mb-1"><span className="text-slate-700 dark:text-slate-300">Platformlar Arası Veri Tutarlılığı</span><span className="text-blue-700">%85</span></div>
-                                        <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full"><div className="h-full bg-blue-700 rounded-full" style={{width: '85%'}}></div></div>
-                                    </div>
+                    {/* Factors */}
+                    <div className="md:col-span-3 fe-card p-6 space-y-4">
+                        <h3 className="fe-section-title text-base">Etki Eden Faktörler</h3>
+                        {[
+                            { label: 'Yorum Hacmi & Güncellik', value: 90, color: '#16A34A' },
+                            { label: 'Anahtar Kelime Yoğunluğu', value: 65, color: '#D97706' },
+                            { label: 'Platform Veri Tutarlılığı', value: 85, color: 'var(--fe-navy)' },
+                            { label: 'Görsel İçerik Zenginliği', value: 50, color: '#DC2626' },
+                        ].map(f => (
+                            <div key={f.label}>
+                                <div className="flex justify-between text-sm mb-1.5">
+                                    <span style={{ color: 'var(--fe-text)' }}>{f.label}</span>
+                                    <span className="font-semibold" style={{ color: f.color }}>%{f.value}</span>
                                 </div>
+                                <ProgressBar value={f.value} color={f.color} />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* ── TAB: SIMULATOR ── */}
+            {activeTab === 'simulator' && (
+                <div className="fe-card overflow-hidden animate-fade-in" style={{ height: 480 }}>
+                    {/* Chat header */}
+                    <div className="flex items-center gap-3 px-5 py-3 border-b" style={{ background: 'var(--fe-navy)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-xs" style={{ background: 'rgba(255,255,255,0.15)', color: '#fff' }}>AI</div>
+                        <div>
+                            <div className="font-semibold text-white text-sm">GPT-4 Simülatörü</div>
+                            <div className="text-[11px]" style={{ color: 'rgba(191,208,232,0.7)' }}>Mevcut verilerinize göre tahmini yanıt</div>
+                        </div>
+                        <span className="ml-auto fe-badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#BFD0E8', fontSize: 10 }}>Salt Okunur</span>
+                    </div>
+                    {/* Messages */}
+                    <div className="flex-1 p-5 space-y-5 overflow-y-auto" style={{ height: 'calc(100% - 100px)', background: 'var(--fe-surface-2)' }}>
+                        <div className="flex gap-3 items-start">
+                            <div className="w-7 h-7 rounded-full flex-shrink-0" style={{ background: 'var(--fe-border)' }} />
+                            <div className="fe-card px-4 py-3 text-sm max-w-sm" style={{ background: 'var(--fe-surface)' }}>
+                                {data.address ? data.address.split(',')[0] : 'Bu bölgede'} çalışmak için sessiz bir kafe önerir misin?
+                            </div>
+                        </div>
+                        <div className="flex gap-3 items-start flex-row-reverse">
+                            <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold" style={{ background: 'var(--fe-navy)' }}>AI</div>
+                            <div className="fe-card px-4 py-3 text-sm max-w-sm leading-relaxed" style={{ borderColor: 'rgba(30,58,95,0.2)', background: 'var(--fe-surface)' }}>
+                                <p className="mb-2">Evet! <strong>{data.branch_name}</strong> şubesini önerebilirim.</p>
+                                <ul className="space-y-1 list-disc pl-4" style={{ color: 'var(--fe-text-muted)' }}>
+                                    <li>{aeoScore > 80 ? 'Yüksek müşteri memnuniyeti' : 'Genel olarak beğenilen mekan'}</li>
+                                    <li>Yorumlarda sık geçen: <strong>"{targetKeywords[0]?.word}"</strong>, <strong>"{targetKeywords[1]?.word}"</strong></li>
+                                </ul>
+                                <p className="text-[10px] mt-3 pt-2 border-t" style={{ color: 'var(--fe-text-faint)', borderColor: 'var(--fe-border)' }}>
+                                    Bu yanıt FrancEye algoritmasının mevcut Google verilerinize dayanarak ürettiği tahminidir.
+                                </p>
                             </div>
                         </div>
                     </div>
-                )}
-
-                {/* TAB 2: LLM SIMULATOR */}
-                {activeTab === 'simulator' && (
-                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[500px] animate-fade-in">
-                        <div className="bg-blue-800 p-4 flex items-center gap-3">
-                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-blue-800 text-xl shadow-inner">AI</div>
-                            <div>
-                                <h3 className="text-white font-bold">GPT-4 Turbo Simülatörü</h3>
-                                <p className="text-blue-200 text-xs">Şu anki verilere göre yapay zekanın yanıtı</p>
-                            </div>
-                        </div>
-                        <div className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar">
-                            <div className="flex gap-4 items-start">
-                                <div className="w-8 h-8 rounded-full bg-slate-300 dark:bg-slate-700 flex-shrink-0"></div>
-                                <div className="bg-slate-200 dark:bg-slate-800 p-4 rounded-2xl rounded-tl-none max-w-[80%] text-slate-800 dark:text-slate-200 text-sm">
-                                    Bana {data.address ? data.address.split(',')[0] : 'bu bölgede'} kahve içebileceğim, sessiz ve çalışmaya uygun en iyi mekanı önerir misin?
-                                </div>
-                            </div>
-                            <div className="flex gap-4 items-start flex-row-reverse">
-                                <div className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">AI</div>
-                                <div className="bg-slate-100 dark:bg-blue-900/40 p-4 rounded-2xl rounded-tr-none max-w-[80%] text-slate-800 dark:text-slate-200 text-sm border border-blue-200 dark:border-blue-800/50 shadow-sm leading-relaxed">
-                                    <p className="mb-2">Kesinlikle! O bölgede çalışmak için sana <strong>{data.branch_name}</strong> şubesini önerebilirim.</p>
-                                    <p className="mb-2">Google yorumlarına göre bu mekanın öne çıkan özellikleri şunlar:</p>
-                                    <ul className="list-disc pl-5 mb-2 space-y-1">
-                                        <li>{aeoScore > 80 ? 'Genel olarak çok yüksek müşteri memnuniyetine sahip.' : 'Kahveleri genel olarak beğeniliyor.'}</li>
-                                        <li>Yorumlarda sıkça <strong>"{targetKeywords[0]?.word || 'Temiz'}"</strong> ve <strong>"{targetKeywords[1]?.word || 'Hızlı'}"</strong> kelimeleri geçiyor.</li>
-                                    </ul>
-                                    <p className="text-xs opacity-70 mt-3 pt-2 border-t border-blue-200 dark:border-blue-800">(Not: Bu yanıt, FrancEye algoritmasının mevcut Google verilerinize dayanarak oluşturduğu tahmini LLM çıktısıdır.)</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-white/10">
-                            <div className="bg-slate-100 dark:bg-slate-900 rounded-xl px-4 py-3 text-slate-500 text-sm italic">
-                                Simülasyon sadece okuma amaçlıdır...
-                            </div>
+                    {/* Input */}
+                    <div className="px-5 py-3 border-t" style={{ borderColor: 'var(--fe-border)', background: 'var(--fe-surface)' }}>
+                        <div className="fe-input text-sm italic" style={{ color: 'var(--fe-text-faint)', cursor: 'default', background: 'var(--fe-surface-2)' }}>
+                            Simülasyon yalnızca okuma amaçlıdır...
                         </div>
                     </div>
-                )}
+                </div>
+            )}
 
-                {/* TAB 3: KEYWORDS */}
-                {activeTab === 'keywords' && (
-                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-8 rounded-3xl border border-slate-200 dark:border-white/10 shadow-xl animate-fade-in">
-                        <div className="flex justify-between items-end mb-8">
-                            <div>
-                                <h3 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                    <span className="text-blue-700">🎯</span> Hedef Kelime Aşılama (Keyword Seeding)
-                                </h3>
-                                <p className="text-sm text-slate-500 mt-1">Müşterilerinizi yönlendirerek yapay zeka veritabanlarına girmesini istediğiniz özellikler.</p>
-                            </div>
-                            <button onClick={handleAddKeyword} className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 rounded-lg text-sm font-bold transition">Yeni Kelime Ekle</button>
+            {/* ── TAB: KEYWORDS ── */}
+            {activeTab === 'keywords' && (
+                <div className="fe-card p-6 animate-fade-in space-y-5">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="fe-section-title text-base">Hedef Kelime Aşılama</h3>
+                            <p className="text-xs mt-0.5" style={{ color: 'var(--fe-text-muted)' }}>Yapay zeka veritabanlarına girmesini istediğiniz özellikler.</p>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Varsayılan Kelimeler */}
-                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-white/5">
-                                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Hedeflenen Kelime</div>
-                                <div className="text-2xl font-black text-slate-800 dark:text-white mb-4">"Hızlı İnternet"</div>
-                                <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full mb-2">
-                                    <div className="bg-blue-700 h-2 rounded-full" style={{width: '25%'}}></div>
-                                </div>
-                                <div className="flex justify-between text-xs text-slate-500">
-                                    <span>Son 30 günde: 12 kez geçti</span>
-                                    <span>Hedef: 50</span>
-                                </div>
-                            </div>
-                            
-                            <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-white/5">
-                                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Hedeflenen Kelime</div>
-                                <div className="text-2xl font-black text-slate-800 dark:text-white mb-4">"Güler Yüzlü"</div>
-                                <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full mb-2">
-                                    <div className="bg-blue-700 h-2 rounded-full" style={{width: '75%'}}></div>
-                                </div>
-                                <div className="flex justify-between text-xs text-slate-500">
-                                    <span>Son 30 günde: 38 kez geçti</span>
-                                    <span>Hedef: 50</span>
-                                </div>
-                            </div>
-
-                            {/* Kullanıcının Eklediği Kelimeler */}
-                            {customKeywords.map((kw, i) => (
-                                <div key={i} className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-blue-700/30">
-                                    <div className="text-xs font-bold text-blue-700 uppercase tracking-wider mb-2">Yeni Kampanya</div>
-                                    <div className="text-2xl font-black text-slate-800 dark:text-white mb-4">"{kw.word}"</div>
-                                    <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full mb-2">
-                                        <div className="bg-blue-700 h-2 rounded-full" style={{width: `${(kw.count/kw.target)*100}%`}}></div>
-                                    </div>
-                                    <div className="flex justify-between text-xs text-slate-500">
-                                        <span>Son 30 günde: {kw.count} kez geçti</span>
-                                        <span>Hedef: {kw.target}</span>
-                                    </div>
-                                </div>
-                            ))}
-
-                            <div onClick={handleAddKeyword} className="bg-slate-600/10 dark:bg-slate-800/20 p-6 rounded-2xl border border-slate-600/30 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-600/20 transition min-h-[160px]">
-                                <div className="w-12 h-12 rounded-full bg-slate-600 text-white flex items-center justify-center text-2xl mb-3">+</div>
-                                <h4 className="font-bold text-purple-700 dark:text-purple-400">Yeni Kampanya</h4>
-                                <p className="text-xs text-slate-700/70 dark:text-purple-300/70 mt-1">Müşterilerinize kahve yanında karekod sunarak spesifik yorum isteyin.</p>
-                            </div>
-                        </div>
+                        <button
+                            onClick={() => setShowKwInput(true)}
+                            className="fe-btn-ghost text-sm flex items-center gap-2"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Yeni Kelime Ekle
+                        </button>
                     </div>
-                )}
 
-                {/* TAB 4: DATA CONSISTENCY */}
-                {activeTab === 'data' && (
-                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-8 rounded-3xl border border-slate-200 dark:border-white/10 shadow-xl animate-fade-in">
-                        <div className="mb-6">
-                            <h3 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                <span className="text-slate-600">🌐</span> Dijital Ayak İzi Tutarlılığı
-                            </h3>
-                            <p className="text-sm text-slate-500 mt-1">Yapay zekalar farklı kaynaklardaki verilerinizin birbiriyle tutarlı olmasını bekler.</p>
+                    {showKwInput && (
+                        <div className="flex gap-2 items-center">
+                            <input
+                                className="fe-input text-sm"
+                                placeholder='Örn: Bebek Dostu, Hızlı Wi-Fi...'
+                                value={newKw}
+                                onChange={e => setNewKw(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && handleAddKeyword()}
+                                autoFocus
+                            />
+                            <button onClick={handleAddKeyword} className="fe-btn-primary text-sm whitespace-nowrap">Ekle</button>
+                            <button onClick={() => setShowKwInput(false)} className="fe-btn-ghost text-sm">İptal</button>
                         </div>
+                    )}
 
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-blue-700/10 rounded-xl border border-blue-700/20">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold">✓</div>
-                                    <div>
-                                        <h4 className="font-bold text-blue-900 dark:text-emerald-400">Çalışma Saatleri</h4>
-                                        <p className="text-xs text-emerald-700/70 dark:text-emerald-400/70">Google, Foursquare ve Web Sitesi birbiriyle tam uyumlu.</p>
-                                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[
+                            { word: 'Hızlı İnternet', count: 12, target: 50 },
+                            { word: 'Güler Yüzlü', count: 38, target: 50 },
+                            ...customKeywords,
+                        ].map((kw, i) => (
+                            <div key={i} className="rounded-xl p-4 space-y-3" style={{ background: 'var(--fe-surface-2)', border: '1px solid var(--fe-border)' }}>
+                                <div>
+                                    <div className="fe-label mb-1">{i < 2 ? 'Hedef Kelime' : 'Yeni Kampanya'}</div>
+                                    <div className="font-bold text-base">"{kw.word}"</div>
                                 </div>
-                                <button className="text-xs font-bold text-blue-800 hover:underline">Detay</button>
+                                <ProgressBar value={Math.min(100, (kw.count / kw.target) * 100)} />
+                                <div className="flex justify-between text-xs" style={{ color: 'var(--fe-text-muted)' }}>
+                                    <span>{kw.count} kez geçti</span>
+                                    <span>Hedef: {kw.target}</span>
+                                </div>
                             </div>
+                        ))}
 
-                            <div className="flex items-center justify-between p-4 bg-red-500/10 rounded-xl border border-red-500/20">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white font-bold">!</div>
-                                    <div>
-                                        <h4 className="font-bold text-red-800 dark:text-red-400">Dijital Menü Linki</h4>
-                                        <p className="text-xs text-red-700/70 dark:text-red-400/70">TripAdvisor'da menü linki bulunamadı. Bu durum AI önerilerini zayıflatır.</p>
-                                    </div>
-                                </div>
-                                <button className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-bold shadow-sm">Linki Güncelle</button>
-                            </div>
-
-                            <div className="flex items-center justify-between p-4 bg-blue-700/10 rounded-xl border border-blue-700/20">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold">✓</div>
-                                    <div>
-                                        <h4 className="font-bold text-blue-900 dark:text-emerald-400">Telefon Numarası</h4>
-                                        <p className="text-xs text-emerald-700/70 dark:text-emerald-400/70">Tüm dijital platformlarda doğru numara (0850 ***) tanımlı.</p>
-                                    </div>
-                                </div>
-                                <button className="text-xs font-bold text-blue-800 hover:underline">Detay</button>
-                            </div>
-                        </div>
+                        <button
+                            onClick={() => setShowKwInput(true)}
+                            className="rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all min-h-[120px]"
+                            style={{ border: '1.5px dashed var(--fe-border-2)', color: 'var(--fe-text-faint)' }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--fe-navy)'; (e.currentTarget as HTMLElement).style.color = 'var(--fe-navy)'; }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--fe-border-2)'; (e.currentTarget as HTMLElement).style.color = 'var(--fe-text-faint)'; }}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            <span className="text-xs font-semibold">Kampanya Ekle</span>
+                        </button>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
+
+            {/* ── TAB: DATA ── */}
+            {activeTab === 'data' && (
+                <div className="fe-card p-6 animate-fade-in space-y-4">
+                    <div>
+                        <h3 className="fe-section-title text-base">Dijital Ayak İzi Tutarlılığı</h3>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--fe-text-muted)' }}>
+                            Yapay zekalar farklı kaynaklardaki verilerinizin tutarlı olmasını bekler.
+                        </p>
+                    </div>
+
+                    <div className="space-y-3">
+                        {[
+                            { status: 'ok', title: 'Çalışma Saatleri', desc: 'Google, Foursquare ve Web Sitesi birbiriyle tam uyumlu.', action: 'Detay' },
+                            { status: 'error', title: 'Dijital Menü Linki', desc: "TripAdvisor'da menü linki bulunamadı. Bu durum AI önerilerini zayıflatır.", action: 'Güncelle' },
+                            { status: 'ok', title: 'Telefon Numarası', desc: 'Tüm dijital platformlarda doğru numara tanımlı.', action: 'Detay' },
+                            { status: 'warning', title: 'İşletme Fotoğrafları', desc: 'Fotoğrafların büyük kısmı 2 yıldan eski. Güncel görsel eklemeniz önerilir.', action: 'Güncelle' },
+                        ].map((item, i) => {
+                            const colors = {
+                                ok: { bg: 'rgba(22,163,74,0.06)', border: 'rgba(22,163,74,0.2)', dot: '#16A34A', text: '#15803D' },
+                                error: { bg: 'rgba(220,38,38,0.06)', border: 'rgba(220,38,38,0.2)', dot: '#DC2626', text: '#DC2626' },
+                                warning: { bg: 'rgba(217,119,6,0.06)', border: 'rgba(217,119,6,0.2)', dot: '#D97706', text: '#B45309' },
+                            }[item.status] || {};
+                            return (
+                                <div key={i} className="flex items-center justify-between p-4 rounded-xl" style={{ background: colors.bg, border: `1px solid ${colors.border}` }}>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: colors.dot }} />
+                                        <div>
+                                            <div className="font-semibold text-sm">{item.title}</div>
+                                            <div className="text-xs mt-0.5" style={{ color: 'var(--fe-text-muted)' }}>{item.desc}</div>
+                                        </div>
+                                    </div>
+                                    <button className="text-xs font-semibold ml-4 whitespace-nowrap" style={{ color: colors.text }}>{item.action}</button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

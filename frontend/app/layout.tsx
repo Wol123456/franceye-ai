@@ -1,22 +1,15 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'FrancEye AI',
-  description: 'AI Powered Branch Health',
+  title: 'FrancEye AI — Şube Sağlık Yönetimi',
+  description: 'Yapay Zeka Destekli Şube Sağlık ve İtibar Takibi',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="tr">
+      <body>{children}</body>
     </html>
   )
 }

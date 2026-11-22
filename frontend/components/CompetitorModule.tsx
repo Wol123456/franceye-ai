@@ -1,20 +1,26 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 
-// --- Constants ---
 const TURKISH_CITIES = [
-    "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir",
-    "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli",
-    "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari",
-    "Hatay", "Isparta", "Mersin", "İstanbul", "İzmir", "Kars", "Kastamonu", "Kayseri", "Kırklareli", "Kırşehir",
-    "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Kahramanmaraş", "Mardin", "Muğla", "Muş", "Nevşehir",
-    "Niğde", "Ordu", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas", "Tekirdağ", "Tokat",
-    "Trabzon", "Tunceli", "Şanlıurfa", "Uşak", "Van", "Yozgat", "Zonguldak", "Aksaray", "Bayburt", "Karaman",
-    "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"
+    "Adana","Adıyaman","Afyonkarahisar","Ağrı","Amasya","Ankara","Antalya","Artvin","Aydın","Balıkesir",
+    "Bilecik","Bingöl","Bitlis","Bolu","Burdur","Bursa","Çanakkale","Çankırı","Çorum","Denizli",
+    "Diyarbakır","Edirne","Elazığ","Erzincan","Erzurum","Eskişehir","Gaziantep","Giresun","Gümüşhane",
+    "Hakkari","Hatay","Isparta","Mersin","İstanbul","İzmir","Kars","Kastamonu","Kayseri","Kırklareli",
+    "Kırşehir","Kocaeli","Konya","Kütahya","Malatya","Manisa","Kahramanmaraş","Mardin","Muğla","Muş",
+    "Nevşehir","Niğde","Ordu","Rize","Sakarya","Samsun","Siirt","Sinop","Sivas","Tekirdağ","Tokat",
+    "Trabzon","Tunceli","Şanlıurfa","Uşak","Van","Yozgat","Zonguldak","Aksaray","Bayburt","Karaman",
+    "Kırıkkale","Batman","Şırnak","Bartın","Ardahan","Iğdır","Yalova","Karabük","Kilis","Osmaniye","Düzce"
 ].sort();
 
-interface CompetitorModuleProps {
-    data: any; // Our branch (optional context)
-    selectedCity: string;
+interface CompetitorModuleProps { data: any; selectedCity: string; }
+
+function ScoreCircle({ value, label, color = 'var(--fe-navy)' }: { value: string; label: string; color?: string }) {
+    return (
+        <div className="text-center">
+            <div className="text-4xl font-black mb-1" style={{ color }}>{value}</div>
+            <div className="fe-label">{label}</div>
+        </div>
+    );
 }
 
 export default function CompetitorModule({ data, selectedCity }: CompetitorModuleProps) {
@@ -22,252 +28,179 @@ export default function CompetitorModule({ data, selectedCity }: CompetitorModul
     const [brandB, setBrandB] = useState('');
     const [city, setCity] = useState('İstanbul');
     const [loading, setLoading] = useState(false);
-    
     const [branchesA, setBranchesA] = useState<any[]>([]);
     const [branchesB, setBranchesB] = useState<any[]>([]);
     const [hasSearched, setHasSearched] = useState(false);
 
-    // Initialize with props if available
     useEffect(() => {
         if (data?.branch_name && !brandA) {
-            // İlk 2 kelimeyi alarak varsayılan markayı tahmin et (Örn: "Oses Çiğköfte Kadıköy" -> "Oses Çiğköfte")
             const parts = data.branch_name.split(' ');
             setBrandA(parts.length >= 2 ? `${parts[0]} ${parts[1]}` : parts[0]);
         }
-        if (selectedCity && !hasSearched) {
-            setCity(selectedCity);
-        }
-    }, [data, selectedCity, brandA, hasSearched]);
+        if (selectedCity && !hasSearched) setCity(selectedCity);
+    }, [data, selectedCity]);
 
     const handleSearch = async () => {
         if (!brandA || !brandB || !city) return;
         setLoading(true);
         setHasSearched(true);
-        
         try {
-            const reqA = fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/search_branches`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: `${brandA} şubeleri ${city}`, city: city })
-            });
-
-            const reqB = fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002'}/search_branches`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: `${brandB} şubeleri ${city}`, city: city })
-            });
-
-            const [resA, resB] = await Promise.all([reqA, reqB]);
-
+            const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8002';
+            const [resA, resB] = await Promise.all([
+                fetch(`${base}/search_branches`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: `${brandA} şubeleri ${city}`, city }) }),
+                fetch(`${base}/search_branches`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: `${brandB} şubeleri ${city}`, city }) }),
+            ]);
             if (resA.ok) setBranchesA(await resA.json());
             if (resB.ok) setBranchesB(await resB.json());
-
-        } catch (e) {
-            console.error(e);
-        }
+        } catch (e) { console.error(e); }
         setLoading(false);
     };
 
-    const avgScoreA = branchesA.length ? (branchesA.reduce((acc, b) => acc + (b.health_score || 0), 0) / branchesA.length).toFixed(1) : '0.0';
-    const avgScoreB = branchesB.length ? (branchesB.reduce((acc, b) => acc + (b.health_score || 0), 0) / branchesB.length).toFixed(1) : '0.0';
-    
-    const totalReviewsA = branchesA.reduce((acc, b) => acc + (b.user_ratings_total || 0), 0);
-    const totalReviewsB = branchesB.reduce((acc, b) => acc + (b.user_ratings_total || 0), 0);
+    const avgA = branchesA.length ? (branchesA.reduce((s, b) => s + (b.health_score || 0), 0) / branchesA.length).toFixed(1) : '—';
+    const avgB = branchesB.length ? (branchesB.reduce((s, b) => s + (b.health_score || 0), 0) / branchesB.length).toFixed(1) : '—';
+    const totalReviewsA = branchesA.reduce((s, b) => s + (b.user_ratings_total || 0), 0);
+    const totalReviewsB = branchesB.reduce((s, b) => s + (b.user_ratings_total || 0), 0);
+    const winner = avgA !== '—' && avgB !== '—' ? (parseFloat(avgA) > parseFloat(avgB) ? brandA : parseFloat(avgB) > parseFloat(avgA) ? brandB : null) : null;
 
     return (
-        <div className="animate-fade-in space-y-8 max-w-7xl mx-auto p-6 md:p-10">
-            {/* Arama Kartı */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full p-6 shadow-xl">
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">⚔️ Marka Savaşları (İl Bazlı Analiz)</h2>
-                <p className="text-slate-500 mb-6">İki farklı markayı ve bir ili seçin. O ildeki tüm şubeleri karşılaştırmalı olarak listeleyelim.</p>
-                
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1">
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">1. Marka</label>
-                        <input 
-                            type="text" 
-                            value={brandA}
-                            onChange={e => setBrandA(e.target.value)}
-                            placeholder="Örn: Burger King"
-                            className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-blue-700/50 rounded-xl px-4 py-3 outline-none focus:border-blue-700 text-slate-800 dark:text-white transition"
-                        />
-                    </div>
-                    
-                    <div className="flex items-center justify-center pt-6">
-                        <span className="text-slate-400 font-bold italic">VS</span>
-                    </div>
+        <div className="animate-fade-in p-6 space-y-5">
+            {/* Page Header */}
+            <div>
+                <h1 className="fe-page-title">Rakip Analizi</h1>
+                <p className="text-sm mt-0.5" style={{ color: 'var(--fe-text-muted)' }}>İki markayı il bazında karşılaştırın</p>
+            </div>
 
+            {/* Search Card */}
+            <div className="fe-card p-5">
+                <div className="flex flex-col md:flex-row gap-4 items-end">
                     <div className="flex-1">
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">2. Marka</label>
-                        <input 
-                            type="text" 
-                            value={brandB}
-                            onChange={e => setBrandB(e.target.value)}
-                            placeholder="Örn: McDonald's"
-                            className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-600/50 rounded-xl px-4 py-3 outline-none focus:border-slate-600 text-slate-800 dark:text-white transition"
-                            onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                        />
+                        <label className="fe-label mb-2 block">1. Marka (Markanız)</label>
+                        <input className="fe-input" placeholder="Örn: Markanız" value={brandA} onChange={e => setBrandA(e.target.value)} />
                     </div>
-
-                    <div className="md:w-48">
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-2">İl Seçimi</label>
-                        <select 
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-700 text-slate-800 dark:text-white"
-                        >
+                    <div className="flex items-center pb-2 self-center">
+                        <span className="text-sm font-black px-2" style={{ color: 'var(--fe-text-faint)' }}>vs</span>
+                    </div>
+                    <div className="flex-1">
+                        <label className="fe-label mb-2 block">2. Marka (Rakip)</label>
+                        <input className="fe-input" placeholder="Örn: 2. Marka" value={brandB} onChange={e => setBrandB(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} />
+                    </div>
+                    <div className="w-full md:w-44">
+                        <label className="fe-label mb-2 block">İl Seçimi</label>
+                        <select className="fe-input" value={city} onChange={e => setCity(e.target.value)}>
                             <option value="">İl Seçin</option>
-                            {TURKISH_CITIES.map(c => (
-                                <option key={c} value={c}>{c}</option>
-                            ))}
+                            {TURKISH_CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                         </select>
                     </div>
+                    <button
+                        onClick={handleSearch}
+                        disabled={loading || !brandA || !brandB || !city}
+                        className="fe-btn-primary whitespace-nowrap disabled:opacity-40"
+                    >
+                        {loading ? 'Analiz ediliyor...' : 'Karşılaştır'}
+                    </button>
+                </div>
 
-                    <div className="flex items-end">
-                        <button 
-                            onClick={handleSearch}
-                            disabled={loading || !brandA || !brandB || !city}
-                            className="w-full md:w-auto bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-8 py-3 rounded-xl font-bold shadow-md transition disabled:opacity-50 hover:scale-105"
-                        >
-                            {loading ? 'Savaş Başlıyor...' : 'Savaşı Başlat'}
-                        </button>
+                {/* Demo Scope & Multi-competitor gating */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs mt-4 pt-3 border-t gap-2" style={{ borderColor: 'var(--fe-border)' }}>
+                    <div className="flex items-center gap-2" style={{ color: 'var(--fe-text-muted)' }}>
+                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span><strong>Demo Kapsamı:</strong> Yalnızca 2. marka (1'e 1 kıyaslama) desteklenir.</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs opacity-60 cursor-not-allowed">
+                        <span>+ 3. ve 4. Rakip Ekle</span>
+                        <span className="fe-badge fe-badge-navy text-[10px]">🔒 Kurumsal</span>
                     </div>
                 </div>
             </div>
 
+            {/* Results */}
             {hasSearched && !loading && (
-                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-                    {/* Genel Özet Scoreboard */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Marka A Özet */}
-                        <div className="bg-gradient-to-br from-blue-700 to-blue-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
-                            <div className="absolute -right-10 -bottom-10 opacity-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2L2 22h20L12 2z"></path></svg>
-                            </div>
-                            <h3 className="text-2xl font-black mb-1 truncate">{brandA}</h3>
-                            <p className="text-slate-100 text-sm mb-6">{city} Genel Ortalaması</p>
-                            
-                            <div className="flex items-end justify-between">
+                <div className="space-y-5 animate-fade-in">
+                    {/* Scoreboard */}
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="fe-card p-5 flex flex-col gap-3">
+                            <div className="fe-label">{brandA}</div>
+                            <ScoreCircle value={avgA} label="Ortalama Skor" />
+                            <div className="border-t pt-3 grid grid-cols-2 gap-2 text-center" style={{ borderColor: 'var(--fe-border)' }}>
                                 <div>
-                                    <div className="text-5xl font-black">{avgScoreA}</div>
-                                    <div className="text-blue-200 text-xs mt-1 font-medium tracking-wider uppercase">Yapay Zeka Skoru</div>
+                                    <div className="font-bold text-base">{branchesA.length}</div>
+                                    <div className="fe-label text-[10px]">Şube</div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-xl font-bold">{branchesA.length} Şube</div>
-                                    <div className="text-sm text-blue-200">{totalReviewsA} Yorum</div>
+                                <div>
+                                    <div className="font-bold text-base">{totalReviewsA.toLocaleString()}</div>
+                                    <div className="fe-label text-[10px]">Yorum</div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Kazanan/Durum */}
-                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col items-center justify-center text-center">
-                            <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 border-4 border-slate-200 dark:border-slate-700">
-                                <span className="text-xl font-black text-slate-400">VS</span>
-                            </div>
-                            <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-2">Bölgesel Hakimiyet</h4>
-                            {parseFloat(avgScoreA) > parseFloat(avgScoreB) ? (
-                                <p className="text-sm text-slate-500"><span className="font-bold text-blue-700">{brandA}</span>, {city} ilinde daha yüksek müşteri memnuniyetine sahip.</p>
-                            ) : parseFloat(avgScoreB) > parseFloat(avgScoreA) ? (
-                                <p className="text-sm text-slate-500"><span className="font-bold text-slate-600">{brandB}</span>, {city} ilinde daha yüksek müşteri memnuniyetine sahip.</p>
+                        <div className="fe-card p-5 flex flex-col items-center justify-center text-center gap-2">
+                            {winner ? (
+                                <>
+                                    <div className="fe-badge fe-badge-success text-xs">Kazanan</div>
+                                    <div className="font-black text-lg">{winner}</div>
+                                    <p className="text-xs" style={{ color: 'var(--fe-text-muted)' }}>{city} ilinde daha yüksek müşteri memnuniyeti</p>
+                                </>
                             ) : (
-                                <p className="text-sm text-slate-500">İki marka da {city} ilinde başa baş mücadele ediyor.</p>
+                                <>
+                                    <div className="fe-label">Bölgesel Durum</div>
+                                    <div className="font-bold">Başa Baş</div>
+                                </>
                             )}
                         </div>
 
-                        {/* Marka B Özet */}
-                        <div className="bg-gradient-to-br from-slate-600 to-slate-700 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
-                            <div className="absolute -right-10 -bottom-10 opacity-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="2" y="2" width="20" height="20" rx="4"></rect></svg>
-                            </div>
-                            <h3 className="text-2xl font-black mb-1 truncate">{brandB}</h3>
-                            <p className="text-slate-200 text-sm mb-6">{city} Genel Ortalaması</p>
-                            
-                            <div className="flex items-end justify-between">
+                        <div className="fe-card p-5 flex flex-col gap-3">
+                            <div className="fe-label">{brandB}</div>
+                            <ScoreCircle value={avgB} label="Ortalama Skor" color="var(--fe-text-muted)" />
+                            <div className="border-t pt-3 grid grid-cols-2 gap-2 text-center" style={{ borderColor: 'var(--fe-border)' }}>
                                 <div>
-                                    <div className="text-5xl font-black">{avgScoreB}</div>
-                                    <div className="text-purple-200 text-xs mt-1 font-medium tracking-wider uppercase">Yapay Zeka Skoru</div>
+                                    <div className="font-bold text-base">{branchesB.length}</div>
+                                    <div className="fe-label text-[10px]">Şube</div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-xl font-bold">{branchesB.length} Şube</div>
-                                    <div className="text-sm text-purple-200">{totalReviewsB} Yorum</div>
+                                <div>
+                                    <div className="font-bold text-base">{totalReviewsB.toLocaleString()}</div>
+                                    <div className="fe-label text-[10px]">Yorum</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Şube Listeleri */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Marka A Şubeleri */}
-                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xl">
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-200 dark:border-slate-800 pb-2 flex justify-between">
-                                <span className="text-blue-700">{brandA} Şubeleri</span>
-                                <span className="text-slate-400 text-sm font-normal">{branchesA.length} sonuç</span>
-                            </h3>
-                            <div className="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
-                                {branchesA.length === 0 ? (
-                                    <p className="text-slate-500 text-sm italic">Bu ilde şube bulunamadı.</p>
-                                ) : (
-                                    branchesA.map((branch: any, idx: number) => (
-                                        <div 
-                                            key={branch.place_id || idx} 
-                                            onClick={() => window.open(`/?place_id=${branch.place_id}&name=${encodeURIComponent(branch.name)}&address=${encodeURIComponent(branch.address || '')}`, '_blank')}
-                                            className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 flex items-center justify-between group hover:border-blue-700/50 transition cursor-pointer"
+                    {/* Branch Lists */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                        {[
+                            { label: brandA, branches: branchesA, accent: 'var(--fe-navy)' },
+                            { label: brandB, branches: branchesB, accent: 'var(--fe-text-muted)' },
+                        ].map(({ label, branches, accent }) => (
+                            <div key={label} className="fe-card p-5">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="font-bold text-sm" style={{ color: accent }}>{label} Şubeleri</h3>
+                                    <span className="fe-badge fe-badge-navy">{branches.length} sonuç</span>
+                                </div>
+                                <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+                                    {branches.length === 0 ? (
+                                        <p className="text-sm italic text-center py-6" style={{ color: 'var(--fe-text-faint)' }}>Bu ilde şube bulunamadı.</p>
+                                    ) : branches.map((branch: any, idx: number) => (
+                                        <div
+                                            key={branch.place_id || idx}
+                                            className="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all"
+                                            style={{ background: 'var(--fe-surface-2)', border: '1px solid var(--fe-border)' }}
+                                            onClick={() => window.open(`/?place_id=${branch.place_id}`, '_blank')}
+                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--fe-navy)'; }}
+                                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--fe-border)'; }}
                                         >
-                                            <div className="flex-1 pr-4">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="bg-slate-100 dark:bg-blue-700/20 text-blue-800 dark:text-blue-600 text-[10px] font-black px-1.5 py-0.5 rounded">#{idx + 1}</span>
-                                                    <h4 className="font-bold text-slate-800 dark:text-white text-sm line-clamp-1">{branch.name}</h4>
-                                                </div>
-                                                <p className="text-[11px] text-slate-500 line-clamp-1">{branch.address}</p>
+                                            <span className="text-[10px] font-black px-1.5 py-0.5 rounded" style={{ background: 'var(--fe-border)', color: 'var(--fe-text-muted)' }}>#{idx + 1}</span>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-semibold text-sm truncate">{branch.name}</div>
+                                                <div className="text-[11px] truncate" style={{ color: 'var(--fe-text-muted)' }}>{branch.address}</div>
                                             </div>
-                                            <div className="text-right shrink-0">
-                                                <div className="text-lg font-black text-blue-800 dark:text-blue-600">{branch.health_score || '-'}</div>
-                                                <div className="flex items-center text-yellow-500 gap-0.5 text-[10px] justify-end font-bold">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                                                    {branch.rating} <span className="text-slate-400">({branch.user_ratings_total})</span>
-                                                </div>
+                                            <div className="text-right flex-shrink-0">
+                                                <div className="font-black text-base" style={{ color: accent }}>{branch.health_score || '—'}</div>
+                                                <div className="text-[10px] font-semibold" style={{ color: '#D97706' }}>★ {branch.rating}</div>
                                             </div>
                                         </div>
-                                    ))
-                                )}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-
-                        {/* Marka B Şubeleri */}
-                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xl">
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 border-b border-slate-200 dark:border-slate-800 pb-2 flex justify-between">
-                                <span className="text-slate-600">{brandB} Şubeleri</span>
-                                <span className="text-slate-400 text-sm font-normal">{branchesB.length} sonuç</span>
-                            </h3>
-                            <div className="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar pr-2">
-                                {branchesB.length === 0 ? (
-                                    <p className="text-slate-500 text-sm italic">Bu ilde şube bulunamadı.</p>
-                                ) : (
-                                    branchesB.map((branch: any, idx: number) => (
-                                        <div 
-                                            key={branch.place_id || idx} 
-                                            onClick={() => window.open(`/?place_id=${branch.place_id}&name=${encodeURIComponent(branch.name)}&address=${encodeURIComponent(branch.address || '')}`, '_blank')}
-                                            className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 flex items-center justify-between group hover:border-slate-600/50 transition cursor-pointer"
-                                        >
-                                            <div className="flex-1 pr-4">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="bg-slate-200 dark:bg-slate-600/20 text-slate-700 dark:text-purple-400 text-[10px] font-black px-1.5 py-0.5 rounded">#{idx + 1}</span>
-                                                    <h4 className="font-bold text-slate-800 dark:text-white text-sm line-clamp-1">{branch.name}</h4>
-                                                </div>
-                                                <p className="text-[11px] text-slate-500 line-clamp-1">{branch.address}</p>
-                                            </div>
-                                            <div className="text-right shrink-0">
-                                                <div className="text-lg font-black text-slate-700 dark:text-purple-400">{branch.health_score || '-'}</div>
-                                                <div className="flex items-center text-yellow-500 gap-0.5 text-[10px] justify-end font-bold">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                                                    {branch.rating} <span className="text-slate-400">({branch.user_ratings_total})</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             )}
