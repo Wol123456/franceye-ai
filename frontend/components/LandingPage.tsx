@@ -22,6 +22,14 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
         }, 3000);
     };
 
+    const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+        e.preventDefault();
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="min-h-screen flex flex-col font-sans transition-colors duration-200" style={{ background: 'var(--fe-bg)', color: 'var(--fe-text)' }}>
             
@@ -56,11 +64,11 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
 
                     {/* Nav Links */}
                     <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
-                        <a href="#features" className="hover:text-blue-400 transition">Özellikler</a>
-                        <a href="#modules" className="hover:text-blue-400 transition">Modüller</a>
-                        <a href="#why-us" className="hover:text-blue-400 transition">Neden FrancEye?</a>
-                        <a href="#pricing" className="hover:text-blue-400 transition">Paketler</a>
-                        <a href="#faq" className="hover:text-blue-400 transition">S.S.S.</a>
+                        <a href="#features" onClick={(e) => scrollToSection(e, 'features')} className="hover:text-blue-400 transition cursor-pointer">Özellikler</a>
+                        <a href="#modules" onClick={(e) => scrollToSection(e, 'modules')} className="hover:text-blue-400 transition cursor-pointer">Modüller</a>
+                        <a href="#why-us" onClick={(e) => scrollToSection(e, 'why-us')} className="hover:text-blue-400 transition cursor-pointer">Neden FrancEye?</a>
+                        <a href="#pricing" onClick={(e) => scrollToSection(e, 'pricing')} className="hover:text-blue-400 transition cursor-pointer">Paketler</a>
+                        <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')} className="hover:text-blue-400 transition cursor-pointer">S.S.S.</a>
                     </nav>
 
                     {/* CTA Actions */}
@@ -217,6 +225,89 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
                                     <span><strong>Tek Tıkla WhatsApp & E-posta:</strong> Sorunlu şubenin müdürüne yapay zekanın hazırladığı eylem planını anında iletir.</span>
                                 </li>
                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Platform Features Section */}
+            <section id="features" className="py-24 border-b" style={{ borderColor: 'var(--fe-border)', background: 'var(--fe-surface)' }}>
+                <div className="max-w-7xl mx-auto px-6 space-y-16">
+                    <div className="text-center space-y-3 max-w-3xl mx-auto">
+                        <div className="fe-label text-blue-600 font-bold">ÖNE ÇIKAN YETENEKLER</div>
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight">
+                            Franchise Ağınızı Zirvede Tutan Akıllı Özellikler
+                        </h2>
+                        <p className="text-base" style={{ color: 'var(--fe-text-muted)' }}>
+                            Operasyonel riskleri anında yakalayan, müşteri memnuniyetini artıran ve şube performansını maksimize eden yapay zeka araçları.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {/* Feature 1 */}
+                        <div className="p-7 rounded-2xl border transition-all duration-200 hover:shadow-xl hover:-translate-y-1 space-y-4" style={{ background: 'var(--fe-surface-2)', borderColor: 'var(--fe-border)' }}>
+                            <div className="w-12 h-12 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center text-2xl font-black">
+                                🚨
+                            </div>
+                            <h3 className="text-xl font-bold">Erken Uyarı & Trend Radarı</h3>
+                            <p className="text-xs leading-relaxed" style={{ color: 'var(--fe-text-muted)' }}>
+                                Son 6 aydaki puan düşüş eğilimini ve art arda gelen olumsuz yorumları anında fark eder. Kriz büyümeden genel merkeze acil müdahale uyarısı üretir.
+                            </p>
+                        </div>
+
+                        {/* Feature 2 */}
+                        <div className="p-7 rounded-2xl border transition-all duration-200 hover:shadow-xl hover:-translate-y-1 space-y-4" style={{ background: 'var(--fe-surface-2)', borderColor: 'var(--fe-border)' }}>
+                            <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-2xl font-black">
+                                ⚡
+                            </div>
+                            <h3 className="text-xl font-bold">Google Maps Canlı Senkronizasyon</h3>
+                            <p className="text-xs leading-relaxed" style={{ color: 'var(--fe-text-muted)' }}>
+                                Şubelerinizin gerçek zamanlı puanlarını, kullanıcı yorumlarını, çalışma saatlerini ve koordinatlarını saniyeler içinde çeker; veri girişi gerektirmez.
+                            </p>
+                        </div>
+
+                        {/* Feature 3 */}
+                        <div className="p-7 rounded-2xl border transition-all duration-200 hover:shadow-xl hover:-translate-y-1 space-y-4" style={{ background: 'var(--fe-surface-2)', borderColor: 'var(--fe-border)' }}>
+                            <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-2xl font-black">
+                                🏷️
+                            </div>
+                            <h3 className="text-xl font-bold">NLP Destekli Şikayet Ayrıştırma</h3>
+                            <p className="text-xs leading-relaxed" style={{ color: 'var(--fe-text-muted)' }}>
+                                Müşteri yorumlarını okur ve yapay zeka ile Temizlik, Personel, Hız ve Fiyat ana başlıklarına otomatik ayırarak hangi şubede neyin aksadığını netleştirir.
+                            </p>
+                        </div>
+
+                        {/* Feature 4 */}
+                        <div className="p-7 rounded-2xl border transition-all duration-200 hover:shadow-xl hover:-translate-y-1 space-y-4" style={{ background: 'var(--fe-surface-2)', borderColor: 'var(--fe-border)' }}>
+                            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-2xl font-black">
+                                📲
+                            </div>
+                            <h3 className="text-xl font-bold">WhatsApp & E-posta Bildirimleri</h3>
+                            <p className="text-xs leading-relaxed" style={{ color: 'var(--fe-text-muted)' }}>
+                                Sorunlu şube tespit edildiğinde yapay zekanın ürettiği özel eylem planını şube müdürüne tek tıkla doğrudan WhatsApp veya e-posta üzerinden iletir.
+                            </p>
+                        </div>
+
+                        {/* Feature 5 */}
+                        <div className="p-7 rounded-2xl border transition-all duration-200 hover:shadow-xl hover:-translate-y-1 space-y-4" style={{ background: 'var(--fe-surface-2)', borderColor: 'var(--fe-border)' }}>
+                            <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl font-black">
+                                📈
+                            </div>
+                            <h3 className="text-xl font-bold">12 Aylık Puan ve İtibar Geçmişi</h3>
+                            <p className="text-xs leading-relaxed" style={{ color: 'var(--fe-text-muted)' }}>
+                                Her şubenin son 1 yıllık puan gelişimini interaktif grafiklerle raporlar. Mevsimsel düşüşleri veya personel kaynaklı dalgalanmaları görünür kılar.
+                            </p>
+                        </div>
+
+                        {/* Feature 6 */}
+                        <div className="p-7 rounded-2xl border transition-all duration-200 hover:shadow-xl hover:-translate-y-1 space-y-4" style={{ background: 'var(--fe-surface-2)', borderColor: 'var(--fe-border)' }}>
+                            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center text-2xl font-black">
+                                💬
+                            </div>
+                            <h3 className="text-xl font-bold">Yapay Zeka Yorum Yanıt Asistanı</h3>
+                            <p className="text-xs leading-relaxed" style={{ color: 'var(--fe-text-muted)' }}>
+                                Müşteri yorumlarına marka tonunuza uygun 5 yıldızlı profesyonel yanıt taslakları hazırlar; müşteri memnuniyetini anında geri kazandırır.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -441,9 +532,9 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
                     </div>
 
                     <div className="flex items-center gap-6 font-semibold">
-                        <a href="#features" className="hover:text-blue-500 transition">Özellikler</a>
-                        <a href="#modules" className="hover:text-blue-500 transition">Modüller</a>
-                        <a href="#pricing" className="hover:text-blue-500 transition">Fiyatlandırma</a>
+                        <a href="#features" onClick={(e) => scrollToSection(e, 'features')} className="hover:text-blue-500 transition cursor-pointer">Özellikler</a>
+                        <a href="#modules" onClick={(e) => scrollToSection(e, 'modules')} className="hover:text-blue-500 transition cursor-pointer">Modüller</a>
+                        <a href="#pricing" onClick={(e) => scrollToSection(e, 'pricing')} className="hover:text-blue-500 transition cursor-pointer">Fiyatlandırma</a>
                         <button onClick={onLaunchDemo} className="text-blue-600 font-bold hover:underline">Canlı Demo</button>
                     </div>
                 </div>
