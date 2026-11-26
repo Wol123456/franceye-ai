@@ -27,6 +27,36 @@ export default function Dashboard() {
     // Mode State (Landing Page vs Demo Environment)
     const [currentMode, setCurrentMode] = useState<'landing' | 'demo'>('landing');
 
+    // Demo User Profile (Saved via Demo Registration)
+    const [demoUser, setDemoUser] = useState<any>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('franceye_demo_user');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed && parsed.name) {
+                        setDemoUser(parsed);
+                        if (parsed.brand) {
+                            setBranchName(parsed.brand);
+                        }
+                    }
+                } catch (e) {}
+            }
+        }
+    }, []);
+
+    const handleLaunchDemo = (lead?: any) => {
+        if (lead) {
+            setDemoUser(lead);
+            if (lead.brand) {
+                setBranchName(lead.brand);
+            }
+        }
+        setCurrentMode('demo');
+    };
+
     // Demo Limitations State (Max 3 brands)
     const [searchedBrands, setSearchedBrands] = useState<string[]>([]);
     const [enterpriseModalOpen, setEnterpriseModalOpen] = useState(false);
@@ -557,7 +587,7 @@ export default function Dashboard() {
         return (
             <div className={isDarkMode ? 'dark' : ''}>
                 <LandingPage 
-                    onLaunchDemo={() => setCurrentMode('demo')}
+                    onLaunchDemo={handleLaunchDemo}
                     isDarkMode={isDarkMode}
                     setIsDarkMode={setIsDarkMode}
                 />
@@ -579,6 +609,27 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="flex items-center gap-3 text-xs">
+                    {demoUser && (
+                        <div className="hidden lg:flex items-center gap-2 bg-blue-600/30 text-blue-200 border border-blue-400/30 px-3 py-1 rounded-full text-[11px]">
+                            <span>👤 {demoUser.name}</span>
+                            <span className="text-white/40">·</span>
+                            <span className="font-semibold text-white">{demoUser.brand}</span>
+                            <button
+                                onClick={() => {
+                                    if (typeof window !== 'undefined') {
+                                        localStorage.removeItem('franceye_demo_user');
+                                    }
+                                    setDemoUser(null);
+                                    setCurrentMode('landing');
+                                }}
+                                className="text-[10px] text-blue-300 hover:text-white underline ml-1 cursor-pointer"
+                                title="Kayıttan çık ve yeni hesapla giriş yap"
+                            >
+                                (Çıkış)
+                            </button>
+                        </div>
+                    )}
+
                     <div className="hidden md:flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-[11px]">
                         <span>Marka Kotası:</span>
                         <strong className="text-blue-300">{searchedBrands.length} / 3</strong>

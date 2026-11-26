@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 interface LandingPageProps {
-    onLaunchDemo: () => void;
+    onLaunchDemo: (user?: any) => void;
     isDarkMode: boolean;
     setIsDarkMode: (val: boolean) => void;
 }
@@ -11,6 +11,62 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [contactForm, setContactForm] = useState({ name: '', brand: '', branches: '5-20', phone: '', email: '' });
     const [contactSubmitted, setContactSubmitted] = useState(false);
+
+    // Demo Registration Modal State
+    const [isDemoRegisterModalOpen, setIsDemoRegisterModalOpen] = useState(false);
+    const [demoRegisterForm, setDemoRegisterForm] = useState({
+        name: '',
+        brand: '',
+        phone: '',
+        email: '',
+        branches: '1-5'
+    });
+    const [demoRegisterLoading, setDemoRegisterLoading] = useState(false);
+
+    const handleDemoButtonClick = () => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('franceye_demo_user');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed && parsed.name) {
+                        onLaunchDemo(parsed);
+                        return;
+                    }
+                } catch (e) {}
+            }
+        }
+        setIsDemoRegisterModalOpen(true);
+    };
+
+    const handleDemoRegisterSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setDemoRegisterLoading(true);
+
+        const leadData = {
+            ...demoRegisterForm,
+            created_at: new Date().toISOString()
+        };
+
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('franceye_demo_user', JSON.stringify(leadData));
+        }
+
+        try {
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://franceye-ai.onrender.com';
+            fetch(`${baseUrl}/demo_lead`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(leadData)
+            }).catch(err => console.warn('Lead async send:', err));
+        } catch (e) {}
+
+        setTimeout(() => {
+            setDemoRegisterLoading(false);
+            setIsDemoRegisterModalOpen(false);
+            onLaunchDemo(leadData);
+        }, 400);
+    };
 
     const handleContactSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,7 +94,7 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
                 <span className="bg-blue-500 text-white px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider">Yeni</span>
                 <span>FrancEye AI v2.4 Kurumsal Sürüm Yayında! 81 ilde yapay zeka destekli itibar ve şube denetimi.</span>
                 <button 
-                    onClick={onLaunchDemo}
+                    onClick={handleDemoButtonClick}
                     className="underline ml-2 hover:text-blue-200 transition font-bold"
                 >
                     Demoyu İnceleyin →
@@ -87,7 +143,7 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
                             Satışla Görüşün
                         </button>
                         <button
-                            onClick={onLaunchDemo}
+                            onClick={handleDemoButtonClick}
                             className="fe-btn-primary text-sm py-2 px-5 flex items-center gap-2 shadow-lg shadow-blue-700/20 active:scale-95 transition"
                         >
                             <span>Canlı Demo</span>
@@ -122,7 +178,7 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
                     {/* CTA Group */}
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                         <button
-                            onClick={onLaunchDemo}
+                            onClick={handleDemoButtonClick}
                             className="w-full sm:w-auto h-14 px-8 text-base font-bold text-white rounded-xl shadow-xl flex items-center justify-center gap-3 transition-all hover:scale-105 active:scale-95"
                             style={{ background: 'linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)' }}
                         >
@@ -408,7 +464,7 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
                     </p>
                     <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
-                            onClick={onLaunchDemo}
+                            onClick={handleDemoButtonClick}
                             className="w-full sm:w-auto h-14 px-8 text-base font-bold bg-white text-slate-900 rounded-xl shadow-2xl hover:bg-slate-100 transition active:scale-95 flex items-center justify-center gap-2"
                         >
                             <span>Demo Alanına Girin</span>
@@ -535,7 +591,7 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
                         <a href="#features" onClick={(e) => scrollToSection(e, 'features')} className="hover:text-blue-500 transition cursor-pointer">Özellikler</a>
                         <a href="#modules" onClick={(e) => scrollToSection(e, 'modules')} className="hover:text-blue-500 transition cursor-pointer">Modüller</a>
                         <a href="#pricing" onClick={(e) => scrollToSection(e, 'pricing')} className="hover:text-blue-500 transition cursor-pointer">Fiyatlandırma</a>
-                        <button onClick={onLaunchDemo} className="text-blue-600 font-bold hover:underline">Canlı Demo</button>
+                        <button onClick={handleDemoButtonClick} className="text-blue-600 font-bold hover:underline">Canlı Demo</button>
                     </div>
                 </div>
             </footer>
@@ -595,6 +651,130 @@ export default function LandingPage({ onLaunchDemo, isDarkMode, setIsDarkMode }:
                                 </button>
                             </form>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Demo Registration Modal */}
+            {isDemoRegisterModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-lg p-7 shadow-2xl space-y-5">
+                        <div className="flex justify-between items-start border-b pb-4" style={{ borderColor: 'var(--fe-border)' }}>
+                            <div>
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 mb-1.5">
+                                    <span>Hızlı Kayıt</span>
+                                    <span>·</span>
+                                    <span>Anında Erişim</span>
+                                </div>
+                                <h3 className="text-xl font-black text-slate-900 dark:text-white">Demo Hesabınızı Oluşturun</h3>
+                                <p className="text-xs text-slate-500 mt-0.5">FrancEye AI Kurumsal Demo ortamına erişmek için bilgilerinizi giriniz.</p>
+                            </div>
+                            <button 
+                                onClick={() => setIsDemoRegisterModalOpen(false)} 
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold p-1"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleDemoRegisterSubmit} className="space-y-4">
+                            <div>
+                                <label className="fe-label mb-1 block font-semibold text-slate-700 dark:text-slate-300">
+                                    Ad Soyad <span className="text-red-500">*</span>
+                                </label>
+                                <input 
+                                    required 
+                                    type="text" 
+                                    className="fe-input text-xs" 
+                                    placeholder="Adınız Soyadınız" 
+                                    value={demoRegisterForm.name} 
+                                    onChange={e => setDemoRegisterForm({ ...demoRegisterForm, name: e.target.value })} 
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="fe-label mb-1 block font-semibold text-slate-700 dark:text-slate-300">
+                                        Markanızın Adı <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        required 
+                                        type="text" 
+                                        className="fe-input text-xs" 
+                                        placeholder="Örn: Markanız" 
+                                        value={demoRegisterForm.brand} 
+                                        onChange={e => setDemoRegisterForm({ ...demoRegisterForm, brand: e.target.value })} 
+                                    />
+                                </div>
+                                <div>
+                                    <label className="fe-label mb-1 block font-semibold text-slate-700 dark:text-slate-300">
+                                        Şube Sayısı
+                                    </label>
+                                    <select 
+                                        className="fe-input text-xs" 
+                                        value={demoRegisterForm.branches} 
+                                        onChange={e => setDemoRegisterForm({ ...demoRegisterForm, branches: e.target.value })}
+                                    >
+                                        <option value="1-5">1 - 5 Şube</option>
+                                        <option value="6-20">6 - 20 Şube</option>
+                                        <option value="21-50">21 - 50 Şube</option>
+                                        <option value="50+">50+ Şube</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="fe-label mb-1 block font-semibold text-slate-700 dark:text-slate-300">
+                                        Telefon <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        required 
+                                        type="tel" 
+                                        className="fe-input text-xs" 
+                                        placeholder="05XX XXX XX XX" 
+                                        value={demoRegisterForm.phone} 
+                                        onChange={e => setDemoRegisterForm({ ...demoRegisterForm, phone: e.target.value })} 
+                                    />
+                                </div>
+                                <div>
+                                    <label className="fe-label mb-1 block font-semibold text-slate-700 dark:text-slate-300">
+                                        İş E-Postası <span className="text-red-500">*</span>
+                                    </label>
+                                    <input 
+                                        required 
+                                        type="email" 
+                                        className="fe-input text-xs" 
+                                        placeholder="isim@sirket.com" 
+                                        value={demoRegisterForm.email} 
+                                        onChange={e => setDemoRegisterForm({ ...demoRegisterForm, email: e.target.value })} 
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-[11px] text-blue-700 dark:text-blue-300 flex items-start gap-2">
+                                <span className="text-base leading-none">🛡️</span>
+                                <span>Kaydınız tamamlandığında demo paneline yönlendirileceksiniz ve markanıza özel şube verileri hazırlanacaktır.</span>
+                            </div>
+
+                            <button 
+                                type="submit" 
+                                disabled={demoRegisterLoading}
+                                className="fe-btn-primary w-full text-center mt-2 py-3 text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 active:scale-98 transition disabled:opacity-70"
+                            >
+                                {demoRegisterLoading ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        <span>Demo Ortamı Hazırlanıyor...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Demoyu Başlat</span>
+                                        <span>→</span>
+                                    </>
+                                )}
+                            </button>
+                        </form>
                     </div>
                 </div>
             )}

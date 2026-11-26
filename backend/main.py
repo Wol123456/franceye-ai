@@ -53,20 +53,26 @@ DB_FILE = "local_db.json"
 def load_db():
     if os.path.exists(DB_FILE):
         with open(DB_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {"branch_phones_db": {}, "complaints_db": [], "admins_db": []}
+            d = json.load(f)
+            if "demo_leads_db" not in d:
+                d["demo_leads_db"] = []
+            return d
+    return {"branch_phones_db": {}, "complaints_db": [], "admins_db": [], "demo_leads_db": []}
 
 def save_db(data):
     with open(DB_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 local_db = load_db()
+if "demo_leads_db" not in local_db:
+    local_db["demo_leads_db"] = []
 branch_phones_db = local_db["branch_phones_db"]
 complaints_db = local_db["complaints_db"]
 admins_db = local_db["admins_db"]
+demo_leads_db = local_db["demo_leads_db"]
 
 def persist():
-    save_db({"branch_phones_db": branch_phones_db, "complaints_db": complaints_db, "admins_db": admins_db})
+    save_db({"branch_phones_db": branch_phones_db, "complaints_db": complaints_db, "admins_db": admins_db, "demo_leads_db": demo_leads_db})
 
 # --- App Setup ---
 app = FastAPI(title="FrancEye AI")
@@ -589,6 +595,40 @@ async def update_admin(admin_id: str, data: AdminProfileCreate):
                 persist()
                 return {"status": "success", "admin": a}
     return {"status": "error", "message": "Admin not found"}
+
+class DemoLeadCreate(BaseModel):
+    name: str
+    brand: str
+    phone: str
+    email: str
+    branches: str = ""
+    created_at: str = ""
+
+@app.post("/demo_lead")
+async def add_demo_lead(data: DemoLeadCreate):
+    new_lead = data.dict()
+    new_lead["id"] = str(uuid.uuid4())
+    if not new_lead["created_at"]:
+        new_lead["created_at"] = datetime.now().isoformat()
+    if db:
+        try:
+            db.collection("demo_leads").document(new_lead["id"]).set(new_lead)
+        except Exception as e:
+            print(f"Firestore Lead Save Error: {e}")
+    demo_leads_db.append(new_lead)
+    persist()
+    print(f"🎯 YENİ DEMO KAYDI: {new_lead['name']} ({new_lead['brand']}) - Tel: {new_lead['phone']}")
+    return {"status": "success", "lead": new_lead}
+
+@app.get("/demo_leads")
+async def get_demo_leads():
+    if db:
+        try:
+            docs = db.collection("demo_leads").stream()
+            return [doc.to_dict() for doc in docs]
+        except Exception as e:
+            print(e)
+    return demo_leads_db
 
 if __name__ == "__main__":
     import uvicorn
