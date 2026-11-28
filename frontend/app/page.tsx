@@ -323,7 +323,16 @@ export default function Dashboard() {
             return;
         }
 
-        // Demo Limitation: Max 3 unique brands
+        // Demo Restriction: Only the registered brand can be searched
+        const registered = (demoUser?.brand || 'Markanız').trim();
+        if (branchName.trim().toLowerCase() !== registered.toLowerCase()) {
+            setBranchName(registered);
+            setEnterpriseModalReason(`Demo Sürümü Sınırı: Demo hesabınız kayıt olduğunuz "${registered}" markasına özeldir. Farklı markaları sorgulamak ve analiz etmek için Kurumsal Pakete geçiş yapabilirsiniz.`);
+            setEnterpriseModalOpen(true);
+            return;
+        }
+
+        // Demo Limitation: Max 3 unique brands (if applicable)
         const cleanBrand = branchName.trim().toLowerCase();
         if (!searchedBrands.includes(cleanBrand)) {
             if (searchedBrands.length >= 3) {
@@ -631,8 +640,8 @@ export default function Dashboard() {
                     )}
 
                     <div className="hidden md:flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-[11px]">
-                        <span>Marka Kotası:</span>
-                        <strong className="text-blue-300">{searchedBrands.length} / 3</strong>
+                        <span>Tanımlı Marka:</span>
+                        <strong className="text-emerald-300 font-bold">{demoUser?.brand || branchName} (Kilitli)</strong>
                         <span className="text-slate-400">·</span>
                         <span>İl Sıralama Limiti:</span>
                         <strong className="text-blue-300">İlk 3 Şube</strong>
@@ -817,32 +826,60 @@ export default function Dashboard() {
                     </div>
 
                     <div className="p-2 grid grid-cols-1 md:grid-cols-12 gap-2">
-                        {/* Brand Input */}
+                        {/* Brand Input (Locked in Demo Mode) */}
                         <div className="md:col-span-5 p-2">
-                            <label className="text-xs text-slate-600 dark:text-slate-400 ml-1 mb-1 block font-semibold uppercase tracking-wider">Marka Adı</label>
-                            <input
-                                type="text"
-                                value={branchName}
-                                onChange={(e) => setBranchName(e.target.value)}
-                                placeholder="Örn: Markanız"
-                                className="w-full bg-slate-100/90 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700/50 transition text-slate-900 dark:text-white"
-                            />
-                            {/* Quick Test Chips */}
-                            <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                                <span className="text-[10px] text-slate-500 font-semibold uppercase">Hızlı Test:</span>
-                                {['Markanız', 'Kahve Dünyası', 'EspressoLab', 'Starbucks', 'Burger King'].map((chip) => (
-                                    <button
-                                        key={chip}
-                                        type="button"
-                                        onClick={() => {
-                                            setBranchName(chip);
-                                            setSelectedCity('İstanbul');
-                                        }}
-                                        className="text-[11px] px-2 py-0.5 rounded-md bg-slate-200/80 dark:bg-slate-700/60 hover:bg-blue-600 hover:text-white transition font-medium text-slate-700 dark:text-slate-300"
-                                    >
-                                        {chip}
-                                    </button>
-                                ))}
+                            <div className="flex items-center justify-between mb-1">
+                                <label className="text-xs text-slate-600 dark:text-slate-400 block font-semibold uppercase tracking-wider">
+                                    Marka Adı
+                                </label>
+                                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded flex items-center gap-1 border border-amber-500/20">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    Demo Markası Kilitli
+                                </span>
+                            </div>
+
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={branchName}
+                                    readOnly
+                                    disabled
+                                    className="w-full bg-slate-100/95 dark:bg-slate-900/95 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 pl-10 font-bold text-slate-900 dark:text-white cursor-not-allowed select-none shadow-inner"
+                                />
+                                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setEnterpriseModalReason("Farklı bir markayı aramak, marka portföyü eklemek ve 81 ilde sınırsız şube analizi yapmak için Kurumsal Pakete geçiş yapabilirsiniz.");
+                                        setEnterpriseModalOpen(true);
+                                    }}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] font-bold bg-blue-600/10 hover:bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-500/30 px-2.5 py-1.5 rounded-lg transition"
+                                >
+                                    Farklı Marka Ekle 🔒
+                                </button>
+                            </div>
+
+                            {/* Informative lock notice & Quick City Chips */}
+                            <div className="flex flex-wrap items-center justify-between gap-1.5 mt-2">
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                    <span className="text-emerald-500 font-bold">✓</span>
+                                    <span>Demo hesabı: <strong>{branchName}</strong></span>
+                                </span>
+                                <div className="flex items-center gap-1 text-[11px]">
+                                    <span className="text-slate-400 text-[10px] font-semibold">Hızlı İl:</span>
+                                    {['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya'].map((c) => (
+                                        <button
+                                            key={c}
+                                            type="button"
+                                            onClick={() => setSelectedCity(c)}
+                                            className={`px-2 py-0.5 rounded text-[10px] font-semibold transition ${selectedCity === c ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-200/80 dark:bg-slate-700/60 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300'}`}
+                                        >
+                                            {c}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
@@ -1454,7 +1491,15 @@ export default function Dashboard() {
                     )}
 
                     {activeModule === 'competitor' && (
-                        <CompetitorModule data={data} selectedCity={selectedCity} />
+                        <CompetitorModule 
+                            data={data} 
+                            selectedCity={selectedCity} 
+                            registeredBrand={demoUser?.brand || branchName || 'Markanız'}
+                            onOpenEnterpriseModal={(reason) => {
+                                setEnterpriseModalReason(reason);
+                                setEnterpriseModalOpen(true);
+                            }}
+                        />
                     )}
 
                     {activeModule === 'settings' && (
